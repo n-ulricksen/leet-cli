@@ -1,1 +1,0 @@
-div [{ class row} { id question-app}]
