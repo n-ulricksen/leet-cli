@@ -1,43 +1,55 @@
 package parser
 
 import (
+	"encoding/json"
 	"io"
-
-	"golang.org/x/net/html"
 )
+
+type tmpQuestion struct {
+	Stat struct {
+		Name string `json:"question__title"`
+		Id   int    `json:"question_id"`
+		Slug string `json:"question__title_slug"`
+	} `json:"stat"`
+	Difficulty map[string]int `json:"difficulty"`
+	Paid       bool           `json:"paid_only"`
+}
+type tmpQuestions struct {
+	Questions []tmpQuestion `json:"stat_status_pairs"`
+}
 
 type Question struct {
 	Name       string
-	URL        string
-	Difficulty string
+	Id         int
+	Slug       string
+	Difficulty int
+	Paid       bool
 	Upvotes    int
 	Downvotes  int
-	Acceptence float32
+	Acceptance float32
 }
 
-const (
-	EASY   = "Easy"
-	MEDIUM = "Medium"
-	HARD   = "Hard"
-)
-
 func ParseQuestions(r io.Reader) ([]Question, error) {
-	doc, err := html.Parse(r)
+	// Decode the JSON
+	var tmp tmpQuestions
+	err := json.NewDecoder(r).Decode(&tmp)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
+	// TODO: navigate to question's URL to find upvotes, downvotes, acceptance
+
+	// Create well formatted questions
 	var questions []Question
-
-	var dfs func(*html.Node)
-	dfs = func(n *html.Node) {
-		// Find for leetcode question
-
-		for c := n.FirstChild; c != nil; c = n.NextSibling {
-			dfs(c)
-		}
+	for _, q := range tmp.Questions {
+		questions = append(questions, Question{
+			Name:       q.Stat.Name,
+			Id:         q.Stat.Id,
+			Slug:       q.Stat.Slug,
+			Difficulty: q.Difficulty["level"],
+			Paid:       q.Paid,
+		})
 	}
-	dfs(doc)
 
 	return questions, nil
 }
