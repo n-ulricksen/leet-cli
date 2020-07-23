@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ulricksennick/leetcode-fetcher"
+	"github.com/ulricksennick/leetcode-fetcher/parser"
+)
+
+const (
+	leetcodeApiUrl = "https://leetcode.com/api/problems/all/"
 )
 
 func main() {
 	fmt.Println("vim-go")
 
-	leetcodeUrl := "https://leetcode.com/api/problems/all/"
 	// TODO: URL query params (flags)
 
 	// Open a connection to Leetcode with the user-specified query params
-	httpResp, err := http.Get(leetcodeUrl)
+	httpResp, err := http.Get(leetcodeApiUrl)
 	if err != nil {
 		panic(err)
 	}
@@ -24,11 +27,11 @@ func main() {
 	defer htmlReader.Close()
 
 	// Parse the questions from the JSON
-	questions, err := parser.ParseQuestions(htmlReader)
+	problems, err := parser.ParseProblems(htmlReader)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("%+v\n", questions[0])
-	fmt.Printf("Fetched %d questions.\n", len(questions))
+	fmt.Printf("Fetched %d problems.\n", len(problems))
+
 }
