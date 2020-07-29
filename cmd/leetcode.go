@@ -24,8 +24,19 @@ func main() {
 
 	// getAllProblems()
 	// getEasyProblems()
-	getTopicProblems("two-pointers")
+	// getTopicProblems("two-pointers")
 
+	database, err := db.CreateDB()
+	must(err)
+	probs, err := database.GetAllProblems()
+
+	easyProbs := problem.FilterByDifficulty(probs, problem.HARD)
+	filtered := problem.FilterByTopic(easyProbs, "array")
+	filtered = problem.FilterOutPaid(filtered)
+	for _, e := range filtered {
+		fmt.Printf("%+v\n", e)
+	}
+	fmt.Println(len(filtered))
 }
 
 func getAllProblems() {

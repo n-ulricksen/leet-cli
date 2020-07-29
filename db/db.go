@@ -2,7 +2,6 @@ package db
 
 import (
 	"encoding/json"
-	"strings"
 	// "fmt"
 
 	tiedot "github.com/HouzuoGuo/tiedot/db"
@@ -57,63 +56,6 @@ func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 			err = e
 		}
 		ret = append(ret, prob)
-		return true
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ret, nil
-}
-
-// TODO: move these functionalities to filter functions, accepting the full
-// list of problems, and returning a subset of filtered problems
-func (db *DB) GetProblemsByDifficulty(difficulty int) ([]*problem.Problem, error) {
-	var ret []*problem.Problem
-	var err error
-
-	coll := db.conn.Use(collectionName)
-
-	coll.ForEachDoc(func(id int, doc []byte) bool {
-		prob, e := documentToProblem(doc)
-		if e != nil {
-			err = e
-		}
-
-		if prob.Difficulty == difficulty {
-			ret = append(ret, prob)
-		}
-		return true
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ret, nil
-}
-
-func (db *DB) GetProblemsByTopic(topic string) ([]*problem.Problem, error) {
-	var ret []*problem.Problem
-	var err error
-
-	// Lowercase search term
-	topic = strings.ToLower(topic)
-
-	coll := db.conn.Use(collectionName)
-
-	coll.ForEachDoc(func(id int, doc []byte) bool {
-		prob, e := documentToProblem(doc)
-		if e != nil {
-			err = e
-		}
-
-		for _, t := range prob.Topics {
-			if t == topic {
-				ret = append(ret, prob)
-			}
-		}
 		return true
 	})
 

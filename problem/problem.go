@@ -18,3 +18,53 @@ type Problem struct {
 	Acceptance float32  `json:"acceptance"`
 	Completed  bool     `json:"completed"`
 }
+
+func FilterByDifficulty(problems []*Problem, difficulty int) []*Problem {
+	var ret []*Problem
+
+	for _, prob := range problems {
+		if prob.Difficulty == difficulty {
+			ret = append(ret, prob)
+		}
+	}
+
+	return ret
+}
+
+func FilterByTopic(problems []*Problem, topic string) []*Problem {
+	var ret []*Problem
+
+	for _, prob := range problems {
+		for _, t := range prob.Topics {
+			if t == topic {
+				ret = append(ret, prob)
+			}
+		}
+	}
+
+	return ret
+}
+
+func FilterOutPaid(problems []*Problem) []*Problem {
+	var ret []*Problem
+
+	for _, prob := range problems {
+		if !prob.Paid {
+			ret = append(ret, prob)
+		}
+	}
+
+	return ret
+}
+
+func FilterOutComplted(problems []*Problem) []*Problem {
+	var ret []*Problem
+
+	for _, prob := range problems {
+		if !prob.Completed {
+			ret = append(ret, prob)
+		}
+	}
+
+	return ret
+}
