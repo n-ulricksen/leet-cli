@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/json"
+	// "fmt"
 	"io"
 	"net/http"
 
@@ -16,9 +17,10 @@ const (
 type tmpProblems struct {
 	Problems []struct {
 		Stat struct {
-			Name string `json:"question__title"`
-			Id   int    `json:"question_id"`
-			Slug string `json:"question__title_slug"`
+			Name      string `json:"question__title"`
+			Id        int    `json:"question_id"`
+			DisplayId int    `json:"frontend_question_id"`
+			Slug      string `json:"question__title_slug"`
 		} `json:"stat"`
 		Difficulty map[string]int `json:"difficulty"`
 		Paid       bool           `json:"paid_only"`
@@ -40,15 +42,15 @@ func ParseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 		return nil, err
 	}
 
-	// TODO: navigate to problem's URL to find upvotes, downvotes, acceptance
-
 	// Create well formatted problems
 	problems := make(map[int]*problem.Problem)
 	for _, q := range decoded.Problems {
 		id := q.Stat.Id
+
 		problems[id] = &problem.Problem{
 			Name:       q.Stat.Name,
 			Id:         q.Stat.Id,
+			DisplayId:  q.Stat.DisplayId,
 			Url:        leetcodeBaseUrl + q.Stat.Slug,
 			Difficulty: q.Difficulty["level"],
 			Paid:       q.Paid,
@@ -60,6 +62,7 @@ func ParseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 	return problems, nil
 }
 
+// Get the list of problems/topics, assign topics to appropriate problem structs
 func updateProblemTopics(problems map[int]*problem.Problem) {
 	httpBody := getHttpBody(problemTopicUrl)
 	defer httpBody.Close()

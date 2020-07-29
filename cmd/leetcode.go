@@ -18,25 +18,39 @@ func main() {
 
 	// TODO: URL query params (flags)
 
-	// database.DropAllProblems()
+	// dropProblems()
 
 	// fetchAndParseProblems()
 
 	// getAllProblems()
-	// getEasyProblems()
-	// getTopicProblems("two-pointers")
 
+	testFilters()
+
+}
+
+func dropProblems() {
+	database, err := db.CreateDB()
+	must(err)
+	database.DropAllProblems()
+}
+
+func testFilters() {
 	database, err := db.CreateDB()
 	must(err)
 	probs, err := database.GetAllProblems()
 
+	// err = database.SetProblemCompleted(689)
+	// must(err)
+	err = database.SetQuestionBad(689)
+	must(err)
+
 	easyProbs := problem.FilterByDifficulty(probs, problem.HARD)
 	filtered := problem.FilterByTopic(easyProbs, "array")
 	filtered = problem.FilterOutPaid(filtered)
-	for _, e := range filtered {
-		fmt.Printf("%+v\n", e)
+	for _, prob := range filtered {
+		fmt.Printf("%v\t%v\t%v\n", prob.DisplayId, prob.Name, prob.BadQuestion)
 	}
-	fmt.Println(len(filtered))
+	fmt.Printf("%d filtered problems.\n", len(filtered))
 }
 
 func getAllProblems() {
@@ -45,29 +59,7 @@ func getAllProblems() {
 	probs, err := database.GetAllProblems()
 	must(err)
 	for _, prob := range probs {
-		fmt.Printf("%+v\n", *prob)
-	}
-	fmt.Printf("Fetched %d problems.\n", len(probs))
-}
-
-func getEasyProblems() {
-	database, err := db.CreateDB()
-	must(err)
-	probs, err := database.GetProblemsByDifficulty(problem.EASY)
-	must(err)
-	for _, prob := range probs {
-		fmt.Printf("%+v\n", *prob)
-	}
-	fmt.Printf("Fetched %d problems.\n", len(probs))
-}
-
-func getTopicProblems(topic string) {
-	database, err := db.CreateDB()
-	must(err)
-	probs, err := database.GetProblemsByTopic(topic)
-	must(err)
-	for _, prob := range probs {
-		fmt.Printf("%+v\n", *prob)
+		fmt.Printf("%v\t%v\n", prob.DisplayId, prob.Name)
 	}
 	fmt.Printf("Fetched %d problems.\n", len(probs))
 }
@@ -75,9 +67,7 @@ func getTopicProblems(topic string) {
 func fetchAndParseProblems() {
 	// Open a connection to Leetcode with the user-specified query params
 	httpResp, err := http.Get(leetcodeApiUrl)
-	if err != nil {
-		panic(err)
-	}
+	must(err)
 
 	// Get the JSON body from the response
 	htmlReader := httpResp.Body
@@ -85,15 +75,14 @@ func fetchAndParseProblems() {
 
 	// Parse the questions from the JSON
 	problems, err := parser.ParseProblems(htmlReader)
-	if err != nil {
-		panic(err)
-	}
+	must(err)
 
 	database, err := db.CreateDB()
 	must(err)
 	for _, problem := range problems {
 		database.InsertProblem(problem)
-		fmt.Printf("%+v\n", problem)
+		// fmt.Println(problem.DisplayId)
+		// fmt.Printf("%+v\n", problem)
 	}
 
 	fmt.Printf("Fetched %d problems.\n", len(problems))

@@ -54,6 +54,7 @@ func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 		prob, e := documentToProblem(doc)
 		if e != nil {
 			err = e
+			return false
 		}
 		ret = append(ret, prob)
 		return true
@@ -64,6 +65,80 @@ func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 	}
 
 	return ret, nil
+}
+
+func (db *DB) SetProblemCompleted(displayId int) error {
+	var updateId int
+	coll := db.conn.Use(collectionName)
+
+	// Lookup problem by displayId
+	var err error
+	coll.ForEachDoc(func(id int, doc []byte) bool {
+		prob, e := documentToProblem(doc)
+		if e != nil {
+			err = e
+			return false
+		}
+
+		if prob.DisplayId == displayId {
+			updateId = id
+			return false
+		}
+		return true
+	})
+	if err != nil {
+		return err
+	}
+
+	doc, err := coll.Read(updateId)
+	if err != nil {
+		return err
+	}
+	doc["completed"] = true
+
+	err = coll.Update(updateId, doc)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *DB) SetQuestionBad(displayId int) error {
+	var updateId int
+	coll := db.conn.Use(collectionName)
+
+	// Lookup problem by displayId
+	var err error
+	coll.ForEachDoc(func(id int, doc []byte) bool {
+		prob, e := documentToProblem(doc)
+		if e != nil {
+			err = e
+			return false
+		}
+
+		if prob.DisplayId == displayId {
+			updateId = id
+			return false
+		}
+		return true
+	})
+	if err != nil {
+		return err
+	}
+
+	doc, err := coll.Read(updateId)
+	if err != nil {
+		return err
+	}
+	doc["badQuestion"] = true
+
+	err = coll.Update(updateId, doc)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (db *DB) DropAllProblems() {

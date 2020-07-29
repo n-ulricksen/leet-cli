@@ -7,16 +7,18 @@ const (
 )
 
 type Problem struct {
-	Name       string   `json:"name"`
-	Id         int      `json:"id"`
-	Url        string   `json:"url"`
-	Difficulty int      `json:"difficulty"`
-	Topics     []string `json:"topics"`
-	Paid       bool     `json:"paid"`
-	Upvotes    int      `json:"upvote"`
-	Downvotes  int      `json:"downvotes"`
-	Acceptance float32  `json:"acceptance"`
-	Completed  bool     `json:"completed"`
+	Name        string   `json:"name"`
+	Id          int      `json:"id"`
+	DisplayId   int      `json:"displayId"`
+	Url         string   `json:"url"`
+	Difficulty  int      `json:"difficulty"`
+	Topics      []string `json:"topics"`
+	Paid        bool     `json:"paid"`
+	Upvotes     int      `json:"upvote"`
+	Downvotes   int      `json:"downvotes"`
+	Acceptance  float32  `json:"acceptance"`
+	Completed   bool     `json:"completed"`
+	BadQuestion bool     `json:"badQuestion"`
 }
 
 func FilterByDifficulty(problems []*Problem, difficulty int) []*Problem {
