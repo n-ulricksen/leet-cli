@@ -6,7 +6,7 @@ import (
 
 	tiedot "github.com/HouzuoGuo/tiedot/db"
 	// "github.com/HouzuoGuo/tiedot/dberr"
-	"github.com/ulricksennick/leetcode-fetcher/problem"
+	"github.com/ulricksennick/lcfetch/problem"
 )
 
 const (

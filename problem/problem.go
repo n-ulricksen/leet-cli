@@ -9,7 +9,7 @@ const (
 type Problem struct {
 	Name       string   `json:"name"`
 	Id         int      `json:"id"`
-	DisplayId  int      `json:"displayId"` // identify problem on Leetcode website
+	DisplayId  int      `json:"displayId"` // identify a problem on Leetcode website
 	Url        string   `json:"url"`
 	Difficulty int      `json:"difficulty"`
 	Topics     []string `json:"topics"`

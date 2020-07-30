@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/ulricksennick/leetcode-fetcher/problem"
+	"github.com/ulricksennick/lcfetch/problem"
 )
 
 const (
