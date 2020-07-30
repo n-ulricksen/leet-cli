@@ -23,10 +23,16 @@ package cmd
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/problem"
+
+	// "github.com/ulricksennick/lcfetch/problem"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -34,23 +40,64 @@ import (
 
 var cfgFile string
 
-var difficulty int
-var topic string
+var difficulty string
+var topics []string
 var includePaid bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "lcfetch",
 	Short: "Program used to retrieve Leetcode problem URLs.",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Long:  `Waste no more time trying to find a good random Leetcode problem.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// Fetch all of the problems, and print a random one after applying
+		// the appropriate filters.
+		database, err := db.CreateDB()
+		must(err)
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {},
+		problemSet, err := database.GetAllProblems()
+		must(err)
+
+		// Apply topic filters
+		for _, topic := range topics {
+			problemSet = problem.FilterByTopic(problemSet, topic)
+		}
+		if len(problemSet) == 0 {
+			fmt.Println("No problems found with the provided topic...")
+			fmt.Println("Run 'lcfetch list -t' to list all topics.")
+			return
+		}
+
+		// Apply difficulty filter
+		if difficulty != "all" {
+			var difficultyRating int
+			switch strings.ToLower(difficulty) {
+			case "easy":
+				difficultyRating = problem.EASY
+				break
+			case "medium":
+				difficultyRating = problem.MEDIUM
+				break
+			case "hard":
+				difficultyRating = problem.HARD
+				break
+			default:
+				fmt.Println("invalid difficulty rating... easy, medium, or hard")
+				return
+			}
+			problemSet = problem.FilterByDifficulty(problemSet, difficultyRating)
+		}
+		if len(problemSet) == 0 {
+			fmt.Println("No problems found with the provided topics/difficulty...")
+			return
+		}
+
+		// Pick and print a random problem to the screen
+		rand.Seed(time.Now().UnixNano())
+		selected := problemSet[rand.Intn(len(problemSet))]
+		fmt.Printf("#%d - %s\n", selected.DisplayId, selected.Name)
+		fmt.Println(selected.Url)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -65,18 +112,14 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
+	// Persistent flags
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.lcfetch.yaml)")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().IntVarP(&difficulty, "difficulty", "d", problem.EASY,
+	// Local command flags
+	rootCmd.Flags().StringVarP(&difficulty, "difficulty", "d", "all",
 		"difficulty of problem to select")
-	rootCmd.Flags().StringVarP(&topic, "topic", "t", "",
-		"type of problem topic to select")
+	rootCmd.Flags().StringSliceVarP(&topics, "topic", "t", []string{},
+		"topic(s) to select problem from")
 	rootCmd.Flags().BoolVarP(&includePaid, "paid", "p", false,
 		"include paid or premuim problems")
 
