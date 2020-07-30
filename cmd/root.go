@@ -48,7 +48,10 @@ var includePaid bool
 var rootCmd = &cobra.Command{
 	Use:   "lcfetch",
 	Short: "Program used to retrieve Leetcode problem URLs.",
-	Long:  `Waste no more time trying to find a good random Leetcode problem.`,
+	Long: `Get a random problem from Leetcode based on difficulty and/or topic.
+
+Example:
+	'lcfetch -d medium -t array,two-pointers'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Fetch all of the problems, and print a random one after applying
 		// the appropriate filters.
@@ -57,6 +60,11 @@ var rootCmd = &cobra.Command{
 
 		problemSet, err := database.GetAllProblems()
 		must(err)
+
+		// Filter paid problems
+		if !includePaid {
+			problemSet = problem.FilterOutPaid(problemSet)
+		}
 
 		// Apply topic filters
 		for _, topic := range topics {
@@ -92,6 +100,8 @@ var rootCmd = &cobra.Command{
 			return
 		}
 
+		fmt.Println(len(problemSet))
+
 		// Pick and print a random problem to the screen
 		rand.Seed(time.Now().UnixNano())
 		selected := problemSet[rand.Intn(len(problemSet))]
@@ -118,8 +128,8 @@ func init() {
 	// Local command flags
 	rootCmd.Flags().StringVarP(&difficulty, "difficulty", "d", "all",
 		"difficulty of problem to select")
-	rootCmd.Flags().StringSliceVarP(&topics, "topic", "t", []string{},
-		"topic(s) to select problem from")
+	rootCmd.Flags().StringSliceVarP(&topics, "topics", "t", []string{},
+		"topic(s) to select problem from (comma-separated, no spaces)")
 	rootCmd.Flags().BoolVarP(&includePaid, "paid", "p", false,
 		"include paid or premuim problems")
 
