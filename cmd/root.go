@@ -40,9 +40,9 @@ import (
 
 var cfgFile string
 
-var difficulty string
-var topics []string
-var includePaid bool
+var rootDifficulty string
+var rootTopics []string
+var rootIncludePaid bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -56,59 +56,69 @@ Examples:
 	Run: func(cmd *cobra.Command, args []string) {
 		// Fetch all of the problems, and print a random one after applying
 		// the appropriate filters.
-		database, err := db.CreateDB()
-		must(err)
-
-		problemSet, err := database.GetAllProblems()
-		must(err)
-
-		// Filter paid problems
-		if !includePaid {
-			problemSet = problem.FilterOutPaid(problemSet)
-		}
-
-		// Apply topic filters
-		for _, topic := range topics {
-			problemSet = problem.FilterByTopic(problemSet, topic)
-		}
-		if len(problemSet) == 0 {
-			fmt.Println("No problems found with the provided topic...")
-			fmt.Println("Run 'lcfetch list -t' to list all topics.")
-			return
-		}
-
-		// Apply difficulty filter
-		if difficulty != "all" {
-			var difficultyRating int
-			switch strings.ToLower(difficulty) {
-			case "easy":
-				difficultyRating = problem.EASY
-				break
-			case "medium":
-				difficultyRating = problem.MEDIUM
-				break
-			case "hard":
-				difficultyRating = problem.HARD
-				break
-			default:
-				fmt.Println("invalid difficulty rating... easy, medium, or hard")
-				return
-			}
-			problemSet = problem.FilterByDifficulty(problemSet, difficultyRating)
-		}
+		problemSet := getFilteredProblemSet(rootDifficulty, rootTopics, rootIncludePaid)
 		if len(problemSet) == 0 {
 			fmt.Println("No problems found with the provided topics/difficulty...")
 			return
 		}
 
-		fmt.Println(len(problemSet))
-
 		// Pick and print a random problem to the screen
 		rand.Seed(time.Now().UnixNano())
 		selected := problemSet[rand.Intn(len(problemSet))]
+		fmt.Printf("%d problems found, give this one a shot:\n\n",
+			len(problemSet))
 		fmt.Printf("#%d - %s\n", selected.DisplayId, selected.Name)
 		fmt.Println(selected.Url)
 	},
+}
+
+func getFilteredProblemSet(difficulty string, topics []string, includePaid bool) []*problem.Problem {
+	database, err := db.CreateDB()
+	must(err)
+
+	problemSet, err := database.GetAllProblems()
+	must(err)
+
+	// Filter paid problems
+	if !includePaid {
+		problemSet = problem.FilterOutPaid(problemSet)
+	}
+
+	// Apply topic filters
+	for _, topic := range topics {
+		problemSet = problem.FilterByTopic(problemSet, topic)
+	}
+	if len(problemSet) == 0 {
+		fmt.Println("No problems found with the provided topic...")
+		fmt.Println("Run 'lcfetch list -t' to list all topics.")
+		return []*problem.Problem{}
+	}
+
+	// Apply difficulty filter
+	if difficulty != "all" {
+		var difficultyRating int
+		switch strings.ToLower(difficulty) {
+		case "easy":
+			difficultyRating = problem.EASY
+			break
+		case "medium":
+			difficultyRating = problem.MEDIUM
+			break
+		case "hard":
+			difficultyRating = problem.HARD
+			break
+		default:
+			fmt.Println("invalid difficulty rating... easy, medium, or hard")
+			return []*problem.Problem{}
+		}
+		problemSet = problem.FilterByDifficulty(problemSet, difficultyRating)
+	}
+	if len(problemSet) == 0 {
+		fmt.Println("No problems found with the provided topics/difficulty...")
+		return []*problem.Problem{}
+	}
+
+	return problemSet
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -127,11 +137,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.lcfetch.yaml)")
 
 	// Local command flags
-	rootCmd.Flags().StringVarP(&difficulty, "difficulty", "d", "all",
+	rootCmd.Flags().StringVarP(&rootDifficulty, "difficulty", "d", "all",
 		"difficulty of problem to select")
-	rootCmd.Flags().StringSliceVarP(&topics, "topics", "t", []string{},
+	rootCmd.Flags().StringSliceVarP(&rootTopics, "topics", "t", []string{},
 		"topic(s) to select problem from (comma-separated, no spaces)")
-	rootCmd.Flags().BoolVarP(&includePaid, "paid", "p", false,
+	rootCmd.Flags().BoolVarP(&rootIncludePaid, "paid", "p", false,
 		"include paid or premuim problems")
 
 }

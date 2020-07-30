@@ -2,7 +2,7 @@ package db
 
 import (
 	"encoding/json"
-	// "fmt"
+	"errors"
 
 	tiedot "github.com/HouzuoGuo/tiedot/db"
 	// "github.com/HouzuoGuo/tiedot/dberr"
@@ -145,7 +145,7 @@ func (db *DB) DropAllProblems() {
 
 // Lookup a problem ID in the database by its leetcode displayId
 func (db *DB) getProblemId(displayId int) (int, error) {
-	var problemId int
+	var problemId int = -1
 	var err error
 
 	coll := db.conn.Use(collectionName)
@@ -165,6 +165,10 @@ func (db *DB) getProblemId(displayId int) (int, error) {
 	})
 	if err != nil {
 		return -1, err
+	}
+
+	if problemId == -1 {
+		return -1, errors.New("No problem found with given id.")
 	}
 
 	return problemId, nil

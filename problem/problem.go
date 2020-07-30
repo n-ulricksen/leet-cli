@@ -14,9 +14,6 @@ type Problem struct {
 	Difficulty int      `json:"difficulty"`
 	Topics     []string `json:"topics"`
 	Paid       bool     `json:"paid"`
-	Upvotes    int      `json:"upvote"`
-	Downvotes  int      `json:"downvotes"`
-	Acceptance float32  `json:"acceptance"`
 	Completed  bool     `json:"completed"`
 	IsBad      bool     `json:"isBad"`
 }

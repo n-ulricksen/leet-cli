@@ -22,54 +22,58 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"bytes"
 	"fmt"
-	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/ulricksennick/lcfetch/db"
 )
 
-// completeCmd represents the complete command
-var completeCmd = &cobra.Command{
-	Use:   "complete",
-	Short: "Mark one or more problems complete.",
-	Long: `Mark one or more problems complete, prevening them from showing up when requesting
-a random problem.
+var listTopics []string
+var listDifficulty string
+var listIncludePaid bool
+
+// listCmd represents the list command
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "Print a list of leetcode problems.",
+	Long: `Print a list of the Leetcode problems, filtered by difficulty and/or topic.
 
 Examples:
-  'lcfetch complete 1337'
-  'lcfetch complete 52 12 628'`,
-	Args: cobra.MinimumNArgs(1),
+  'lcfetch list'
+  'lcfetch list -d easy -t array,string'`,
 	Run: func(cmd *cobra.Command, args []string) {
-		database, err := db.CreateDB()
-		must(err)
-
-		for _, arg := range args {
-			problemId, err := strconv.Atoi(arg)
-			if err != nil {
-				fmt.Printf("Invalid problem ID: %v\n", arg)
-				continue
-			}
-			err = database.SetProblemCompleted(problemId)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			fmt.Printf("Problem #%v complete!\n", problemId)
+		problemSet := getFilteredProblemSet(listDifficulty, listTopics, listIncludePaid)
+		if len(problemSet) == 0 {
+			return
 		}
+
+		var listBuf bytes.Buffer
+		listBuf.WriteString("ID\tCompleted\tName\n")
+		for _, problem := range problemSet {
+			completedCh := ' '
+			if problem.Completed {
+				completedCh = 'x'
+			}
+			listBuf.WriteString(fmt.Sprintf("%d\t%c\t\t%s\n",
+				problem.DisplayId, completedCh, problem.Name))
+		}
+		fmt.Print(listBuf.String())
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(completeCmd)
+	rootCmd.AddCommand(listCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// completeCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// completeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	listCmd.Flags().StringSliceVarP(&listTopics, "topics", "t", []string{},
+		"topic(s) of problems to list (comma-separated, no spaces)")
+	listCmd.Flags().StringVarP(&listDifficulty, "difficulty", "d", "all",
+		"difficulty of problems to list")
+	listCmd.Flags().BoolVarP(&listIncludePaid, "paid", "p", false,
+		"include paid or premium problems")
 }
