@@ -50,8 +50,9 @@ var rootCmd = &cobra.Command{
 	Short: "Program used to retrieve Leetcode problem URLs.",
 	Long: `Get a random problem from Leetcode based on difficulty and/or topic.
 
-Example:
-	'lcfetch -d medium -t array,two-pointers'`,
+Examples:
+  'lcfetch -d hard -t dynamic-programming'
+  'lcfetch -d medium -t array,two-pointers'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Fetch all of the problems, and print a random one after applying
 		// the appropriate filters.

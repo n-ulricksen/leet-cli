@@ -29,17 +29,15 @@ import (
 	"github.com/ulricksennick/lcfetch/db"
 )
 
-// completeCmd represents the complete command
-var completeCmd = &cobra.Command{
-	Use:   "complete",
-	Short: "Mark one or more problems complete.",
-	Long: `Mark one or more problems complete, prevening them from showing up when requesting
-a random problem.
+// incompleteCmd represents the incomplete command
+var incompleteCmd = &cobra.Command{
+	Use:   "incomplete",
+	Short: "Mark one or more problems incomplete.",
+	Long: `Mark more ore more problems, allowing them to show up when requesting a random problem.
 
-Examples:
-  'lcfetch complete 1337'
-  'lcfetch complete 52 12 628'`,
-	Args: cobra.MinimumNArgs(1),
+Example:
+  'lcfetch incomplete 1337'
+  'lcfetch incomplete 628 12 52'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		database, err := db.CreateDB()
 		must(err)
@@ -50,22 +48,22 @@ Examples:
 				fmt.Printf("Invalid problem ID: %v\n", arg)
 				continue
 			}
-			database.SetProblemCompleted(problemId)
-			fmt.Printf("Problem #%v complete!\n", problemId)
+			database.SetProblemIncomplete(problemId)
+			fmt.Printf("Problem #%v marked incomplete.\n", problemId)
 		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(completeCmd)
+	rootCmd.AddCommand(incompleteCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// completeCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// incompleteCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// completeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// incompleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -37,17 +37,14 @@ func testFilters() {
 	must(err)
 	probs, err := database.GetAllProblems()
 
-	topic := problem.TOPIC_DEPTH_FIRST_SEARCH
 	difficulty := problem.HARD
 
 	filtered := problem.FilterByDifficulty(probs, difficulty)
-	filtered = problem.FilterByTopic(filtered, topic)
 	filtered = problem.FilterOutPaid(filtered)
 	for _, prob := range filtered {
 		fmt.Printf("%v\t%v\n", prob.DisplayId, prob.Name)
 	}
 	fmt.Println()
-	fmt.Printf("Topic: %s\tDifficulty: %d\n", topic, difficulty)
 	fmt.Printf("%d filtered problems.\n", len(filtered))
 }
 

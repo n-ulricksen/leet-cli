@@ -92,6 +92,29 @@ func (db *DB) SetProblemCompleted(displayId int) error {
 	return nil
 }
 
+// Set a problem's "completed" field as false
+func (db *DB) SetProblemIncomplete(displayId int) error {
+	updateId, err := db.getProblemId(displayId)
+	if err != nil {
+		return err
+	}
+
+	coll := db.conn.Use(collectionName)
+
+	doc, err := coll.Read(updateId)
+	if err != nil {
+		return err
+	}
+	doc["completed"] = false
+
+	err = coll.Update(updateId, doc)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Set a problem's "isBad" field as true
 func (db *DB) SetProblemBad(displayId int) error {
 	updateId, err := db.getProblemId(displayId)
