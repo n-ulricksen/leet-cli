@@ -41,14 +41,16 @@ func testFilters() {
 
 	// err = database.SetProblemCompleted(689)
 	// must(err)
-	err = database.SetQuestionBad(689)
+	err = database.SetProblemBad(561)
+	err = database.SetProblemBad(1304)
+	err = database.SetProblemBad(1380)
 	must(err)
 
-	easyProbs := problem.FilterByDifficulty(probs, problem.HARD)
+	easyProbs := problem.FilterByDifficulty(probs, problem.EASY)
 	filtered := problem.FilterByTopic(easyProbs, "array")
 	filtered = problem.FilterOutPaid(filtered)
 	for _, prob := range filtered {
-		fmt.Printf("%v\t%v\t%v\n", prob.DisplayId, prob.Name, prob.BadQuestion)
+		fmt.Printf("%v\t%v\t%v\n", prob.DisplayId, prob.Name, prob.IsBad)
 	}
 	fmt.Printf("%d filtered problems.\n", len(filtered))
 }

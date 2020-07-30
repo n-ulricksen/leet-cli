@@ -7,18 +7,18 @@ const (
 )
 
 type Problem struct {
-	Name        string   `json:"name"`
-	Id          int      `json:"id"`
-	DisplayId   int      `json:"displayId"`
-	Url         string   `json:"url"`
-	Difficulty  int      `json:"difficulty"`
-	Topics      []string `json:"topics"`
-	Paid        bool     `json:"paid"`
-	Upvotes     int      `json:"upvote"`
-	Downvotes   int      `json:"downvotes"`
-	Acceptance  float32  `json:"acceptance"`
-	Completed   bool     `json:"completed"`
-	BadQuestion bool     `json:"badQuestion"`
+	Name       string   `json:"name"`
+	Id         int      `json:"id"`
+	DisplayId  int      `json:"displayId"` // identify problem on Leetcode website
+	Url        string   `json:"url"`
+	Difficulty int      `json:"difficulty"`
+	Topics     []string `json:"topics"`
+	Paid       bool     `json:"paid"`
+	Upvotes    int      `json:"upvote"`
+	Downvotes  int      `json:"downvotes"`
+	Acceptance float32  `json:"acceptance"`
+	Completed  bool     `json:"completed"`
+	IsBad      bool     `json:"isBad"`
 }
 
 func FilterByDifficulty(problems []*Problem, difficulty int) []*Problem {

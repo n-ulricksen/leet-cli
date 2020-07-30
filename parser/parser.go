@@ -2,7 +2,6 @@ package parser
 
 import (
 	"encoding/json"
-	// "fmt"
 	"io"
 	"net/http"
 
@@ -62,8 +61,12 @@ func ParseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 	return problems, nil
 }
 
-// Get the list of problems/topics, assign topics to appropriate problem structs
+// Get the list of problems/topics, assign topics to appropriate problems
 func updateProblemTopics(problems map[int]*problem.Problem) {
+	if len(problems) == 0 {
+		return
+	}
+
 	httpBody := getHttpBody(problemTopicUrl)
 	defer httpBody.Close()
 
@@ -72,6 +75,9 @@ func updateProblemTopics(problems map[int]*problem.Problem) {
 
 	for _, topic := range slugsTmp.Topics {
 		for _, questionId := range topic.Questions {
+			if problems[questionId] == nil {
+				continue
+			}
 			problems[questionId].Topics = append(problems[questionId].Topics, topic.Slug)
 		}
 	}

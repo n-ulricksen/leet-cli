@@ -31,6 +31,7 @@ func CreateDB() (*DB, error) {
 	return &DB{conn}, nil
 }
 
+// Insert a problem into the database, returns the problem's database ID
 func (db *DB) InsertProblem(problem *problem.Problem) (int, error) {
 	coll := db.conn.Use(collectionName)
 
@@ -44,6 +45,7 @@ func (db *DB) InsertProblem(problem *problem.Problem) (int, error) {
 	return docID, err
 }
 
+// Get a slice of pointers to all problems in the database
 func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 	var ret []*problem.Problem
 	var err error
@@ -67,28 +69,14 @@ func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 	return ret, nil
 }
 
+// Set a problem's "completed" field as true
 func (db *DB) SetProblemCompleted(displayId int) error {
-	var updateId int
-	coll := db.conn.Use(collectionName)
-
-	// Lookup problem by displayId
-	var err error
-	coll.ForEachDoc(func(id int, doc []byte) bool {
-		prob, e := documentToProblem(doc)
-		if e != nil {
-			err = e
-			return false
-		}
-
-		if prob.DisplayId == displayId {
-			updateId = id
-			return false
-		}
-		return true
-	})
+	updateId, err := db.getProblemId(displayId)
 	if err != nil {
 		return err
 	}
+
+	coll := db.conn.Use(collectionName)
 
 	doc, err := coll.Read(updateId)
 	if err != nil {
@@ -104,34 +92,19 @@ func (db *DB) SetProblemCompleted(displayId int) error {
 	return nil
 }
 
-func (db *DB) SetQuestionBad(displayId int) error {
-	var updateId int
-	coll := db.conn.Use(collectionName)
-
-	// Lookup problem by displayId
-	var err error
-	coll.ForEachDoc(func(id int, doc []byte) bool {
-		prob, e := documentToProblem(doc)
-		if e != nil {
-			err = e
-			return false
-		}
-
-		if prob.DisplayId == displayId {
-			updateId = id
-			return false
-		}
-		return true
-	})
+// Set a problem's "isBad" field as true
+func (db *DB) SetProblemBad(displayId int) error {
+	updateId, err := db.getProblemId(displayId)
 	if err != nil {
 		return err
 	}
 
+	coll := db.conn.Use(collectionName)
 	doc, err := coll.Read(updateId)
 	if err != nil {
 		return err
 	}
-	doc["badQuestion"] = true
+	doc["isBad"] = true
 
 	err = coll.Update(updateId, doc)
 	if err != nil {
@@ -141,9 +114,37 @@ func (db *DB) SetQuestionBad(displayId int) error {
 	return nil
 }
 
+// Drop the "problems" collection, create a new empty one
 func (db *DB) DropAllProblems() {
 	db.conn.Drop(collectionName)
 	db.conn.Create(collectionName)
+}
+
+// Lookup a problem ID in the database by its leetcode displayId
+func (db *DB) getProblemId(displayId int) (int, error) {
+	var problemId int
+	var err error
+
+	coll := db.conn.Use(collectionName)
+
+	coll.ForEachDoc(func(id int, doc []byte) bool {
+		prob, e := documentToProblem(doc)
+		if e != nil {
+			err = e
+			return false
+		}
+
+		if prob.DisplayId == displayId {
+			problemId = id
+			return false
+		}
+		return true
+	})
+	if err != nil {
+		return -1, err
+	}
+
+	return problemId, nil
 }
 
 // This function is so hacky... ＞︿＜
