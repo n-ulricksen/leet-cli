@@ -48,13 +48,15 @@ Examples:
 		}
 
 		var listBuf bytes.Buffer
-		listBuf.WriteString("ID\tCompleted\tName\n")
+		listBuf.WriteString("-----------------------------------------\n")
+		listBuf.WriteString("ID\tComplete\tName\t\t|\n")
+		listBuf.WriteString("-----------------------------------------\n")
 		for _, problem := range problemSet {
 			completedCh := ' '
 			if problem.Completed {
 				completedCh = 'x'
 			}
-			listBuf.WriteString(fmt.Sprintf("%d\t%c\t\t%s\n",
+			listBuf.WriteString(fmt.Sprintf("%d\t%c\t%s\n",
 				problem.DisplayId, completedCh, problem.Name))
 		}
 		fmt.Print(listBuf.String())
