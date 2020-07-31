@@ -57,6 +57,8 @@ Examples:
 		// Fetch all of the problems, and print a random one after applying
 		// the appropriate filters.
 		problemSet := getFilteredProblemSet(rootDifficulty, rootTopics, rootIncludePaid)
+		// Filter completed problems
+		problemSet = problem.FilterOutCompleted(problemSet)
 		if len(problemSet) == 0 {
 			fmt.Println("No problems found with the provided topics/difficulty...")
 			return
