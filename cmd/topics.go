@@ -29,21 +29,22 @@ import (
 	"github.com/ulricksennick/lcfetch/problem"
 )
 
-// Number of columns to split topic list into when printing
-const COLUMN_COUNT = 3
-
 // topicsCmd represents the topics command
 var topicsCmd = &cobra.Command{
 	Use:   "topics",
 	Short: "List all problem topics on Leetcode.",
 	Long:  `List all problem topics on Leetcode.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Number of columns to split topic list into when printing
+		const columnCount = 3
+
 		sorted := problem.GetSortedTopics()
+
 		var outBuf bytes.Buffer
 		outBuf.WriteString("Leetcode problem topics:\n")
 		i := 0
 		for _, topic := range sorted {
-			if i%COLUMN_COUNT == 0 {
+			if i%columnCount == 0 {
 				outBuf.WriteByte('\n')
 			}
 			outBuf.WriteString(fmt.Sprintf("%-26s", topic))

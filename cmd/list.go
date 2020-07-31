@@ -77,5 +77,5 @@ func init() {
 	listCmd.Flags().StringVarP(&listDifficulty, "difficulty", "d", "all",
 		"difficulty of problems to list")
 	listCmd.Flags().BoolVarP(&listIncludePaid, "paid", "p", false,
-		"include paid or premium problems")
+		"include paid/premium problems")
 }

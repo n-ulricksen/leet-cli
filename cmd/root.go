@@ -144,7 +144,7 @@ func init() {
 	rootCmd.Flags().StringSliceVarP(&rootTopics, "topics", "t", []string{},
 		"topic(s) to select problem from (comma-separated, no spaces)")
 	rootCmd.Flags().BoolVarP(&rootIncludePaid, "paid", "p", false,
-		"include paid or premuim problems")
+		"include paid/premium problems")
 
 }
 
