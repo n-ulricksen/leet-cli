@@ -69,6 +69,39 @@ func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 	return ret, nil
 }
 
+// Return a slice of pointers to one or more problems found by displayId
+func (db *DB) GetProblemsByDisplayId(ids []int) ([]*problem.Problem, error) {
+	var ret []*problem.Problem
+	var err error
+
+	coll := db.conn.Use(collectionName)
+
+	// Used to check for target IDs when iterating over all problems
+	displayIds := make(map[int]bool)
+	for _, id := range ids {
+		displayIds[id] = true
+	}
+
+	// Iterate over all problems checking displayId
+	coll.ForEachDoc(func(id int, doc []byte) bool {
+		prob, e := documentToProblem(doc)
+		if e != nil {
+			err = e
+			return false
+		}
+		if displayIds[prob.DisplayId] {
+			ret = append(ret, prob)
+		}
+		return true
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 // Set a problem's "completed" field as true
 func (db *DB) SetProblemCompleted(displayId int) error {
 	updateId, err := db.getProblemId(displayId)
