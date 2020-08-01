@@ -50,6 +50,7 @@ var topicsCmd = &cobra.Command{
 			outBuf.WriteString(fmt.Sprintf("%-26s", topic))
 			i++
 		}
+		outBuf.WriteByte('\n')
 		fmt.Print(outBuf.String())
 	},
 }

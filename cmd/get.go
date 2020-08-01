@@ -66,7 +66,18 @@ Examples:
 			if prob.Paid {
 				outBuf.WriteString(" (Premium)")
 			}
-			outBuf.WriteString(fmt.Sprintf("\n%s\n\n", prob.Url))
+
+			var difficulty string
+			switch prob.Difficulty {
+			case 1:
+				difficulty = "Easy"
+			case 2:
+				difficulty = "Medium"
+			case 3:
+				difficulty = "Hard"
+			}
+
+			outBuf.WriteString(fmt.Sprintf("\n%s\t%s\n\n", difficulty, prob.Url))
 		}
 		fmt.Print(outBuf.String())
 	},
