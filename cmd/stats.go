@@ -32,6 +32,8 @@ import (
 )
 
 var statsIncludePaid bool
+var statsDifficulty string
+var statsTopic string
 
 // statsCmd represents the stats command
 var statsCmd = &cobra.Command{
@@ -48,78 +50,106 @@ var statsCmd = &cobra.Command{
 		problemSet, err := database.GetAllProblems()
 		must(err)
 
-		// Filter paid problems unless flag is set
-		if !statsIncludePaid {
-			problemSet = problem.FilterOutPaid(problemSet)
+		problemSet = getFilteredProblemSet(statsDifficulty, []string{statsTopic},
+			statsIncludePaid)
+		if len(problemSet) == 0 {
+			return
 		}
 
-		// Create a map of stats categories, each containing a slice [x,y],
-		// where x is the # of complete problems and y is the number of total
-		// problems per category.
-		completedCount := make(map[string][]int)
-		completedCount["all"] = make([]int, 2)
-		completedCount["easy"] = make([]int, 2)
-		completedCount["medium"] = make([]int, 2)
-		completedCount["hard"] = make([]int, 2)
-		for _, topic := range problem.GetSortedTopics() {
-			completedCount[topic] = make([]int, 2)
-		}
+		completedCount := createCompletedMap(problemSet)
 
-		for _, prob := range problemSet {
-			// Total (all problems)
-			if prob.Completed {
-				completedCount["all"][0]++
-			}
-			completedCount["all"][1]++
-
-			// Difficulty
-			var diff string
-			switch prob.Difficulty {
-			case 1:
-				diff = "easy"
-			case 2:
-				diff = "medium"
-			case 3:
-				diff = "hard"
-			}
-			if prob.Completed {
-				completedCount[diff][0]++
-			}
-			completedCount[diff][1]++
-
-			// Topic
-			for _, topic := range prob.Topics {
-				if prob.Completed {
-					completedCount[topic][0]++
-				}
-				completedCount[topic][1]++
-			}
-		}
-
+		// Start printing the stats
 		var outBuf bytes.Buffer
 		outBuf.WriteString("Leetcode problem statistics:\n\n")
 
+		// Print totals if no difficulty/topic specified
+		if statsDifficulty == "all" && statsTopic == "" {
+			outBuf.WriteString(fmt.Sprintf("%d/%d completed problems.\n\n",
+				completedCount["all"][0], completedCount["all"][1]))
+		}
+
 		// Print difficulties
-		outBuf.WriteString(fmt.Sprintf("Easy: %d/%d\n", completedCount["easy"][0],
-			completedCount["easy"][1]))
-		outBuf.WriteString(fmt.Sprintf("Medium: %d/%d\n", completedCount["medium"][0],
-			completedCount["medium"][1]))
-		outBuf.WriteString(fmt.Sprintf("Hard: %d/%d\n", completedCount["hard"][0],
-			completedCount["hard"][1]))
+		for _, difficulty := range problem.DIFFICULTY_STRINGS {
+			if completedCount[difficulty][1] > 0 {
+				var label []byte
+				label = append([]byte{difficulty[0] - 32}, difficulty[1:]...)
+				outBuf.WriteString(fmt.Sprintf("%s: %d/%d\n", label,
+					completedCount[difficulty][0], completedCount[difficulty][1]))
+			}
+
+		}
 
 		// Print topics
-		sorted := problem.GetSortedTopics()
+		var sorted []string
+		if len(statsTopic) == 0 {
+			sorted = problem.GetSortedTopics()
+		} else {
+			sorted = []string{statsTopic}
+		}
 		i := 0
 		for _, topic := range sorted {
-			if i%columnCount == 0 {
-				outBuf.WriteByte('\n')
+			if completedCount[topic][1] > 0 {
+				if i%columnCount == 0 {
+					outBuf.WriteByte('\n')
+				}
+
+				outBuf.WriteString(fmt.Sprintf("%-22s", util.KebabToCapital(topic)))
+				outBuf.WriteString(fmt.Sprintf("%d/%d\t", completedCount[topic][0],
+					completedCount[topic][1]))
+				i++
 			}
-			outBuf.WriteString(fmt.Sprintf("%-22s%d/%d\t", util.KebabToCapital(topic),
-				completedCount[topic][0], completedCount[topic][1]))
-			i++
 		}
+		outBuf.WriteByte('\n')
 		fmt.Print(outBuf.String())
 	},
+}
+
+// Create a map of stats categories from the given problem set, each containing
+// a slice [x,y], where x is the # of complete problems and y is the number of
+// total problems per category.
+func createCompletedMap(problemSet []*problem.Problem) map[string][]int {
+	completedCount := make(map[string][]int)
+	completedCount["all"] = make([]int, 2)
+	completedCount["easy"] = make([]int, 2)
+	completedCount["medium"] = make([]int, 2)
+	completedCount["hard"] = make([]int, 2)
+	for _, topic := range problem.GetSortedTopics() {
+		completedCount[topic] = make([]int, 2)
+	}
+
+	// Compute completed/total values
+	for _, prob := range problemSet {
+		// Total (all problems)
+		if prob.Completed {
+			completedCount["all"][0]++
+		}
+		completedCount["all"][1]++
+
+		// Difficulty
+		var diff string
+		switch prob.Difficulty {
+		case 1:
+			diff = "easy"
+		case 2:
+			diff = "medium"
+		case 3:
+			diff = "hard"
+		}
+		if prob.Completed {
+			completedCount[diff][0]++
+		}
+		completedCount[diff][1]++
+
+		// Topic
+		for _, topic := range prob.Topics {
+			if prob.Completed {
+				completedCount[topic][0]++
+			}
+			completedCount[topic][1]++
+		}
+	}
+
+	return completedCount
 }
 
 func init() {
@@ -136,4 +166,8 @@ func init() {
 	// statsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	statsCmd.Flags().BoolVarP(&statsIncludePaid, "paid", "p", false,
 		"include paid/premium questions")
+	statsCmd.Flags().StringVarP(&statsTopic, "topic", "t", "",
+		"topic of problems to print with stats (comma-separated, no spaces)")
+	statsCmd.Flags().StringVarP(&statsDifficulty, "difficulty", "d", "all",
+		"difficulty of problems to print with stats")
 }

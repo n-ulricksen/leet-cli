@@ -87,8 +87,13 @@ func getFilteredProblemSet(difficulty string, topics []string, includePaid bool)
 	}
 
 	// Apply topic filters
-	for _, topic := range topics {
-		problemSet = problem.FilterByTopic(problemSet, topic)
+	if len(topics) > 0 {
+		for _, topic := range topics {
+			if topic == "" {
+				continue
+			}
+			problemSet = problem.FilterByTopic(problemSet, topic)
+		}
 	}
 	if len(problemSet) == 0 {
 		fmt.Println("No problems found with the provided topic...")
@@ -110,7 +115,7 @@ func getFilteredProblemSet(difficulty string, topics []string, includePaid bool)
 			difficultyRating = problem.HARD
 			break
 		default:
-			fmt.Println("invalid difficulty rating... easy, medium, or hard")
+			fmt.Println("Invalid difficulty rating... easy, medium, or hard")
 			return []*problem.Problem{}
 		}
 		problemSet = problem.FilterByDifficulty(problemSet, difficultyRating)

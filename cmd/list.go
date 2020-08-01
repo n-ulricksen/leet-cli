@@ -26,11 +26,14 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/ulricksennick/lcfetch/problem"
 )
 
 var listTopics []string
 var listDifficulty string
 var listIncludePaid bool
+var listFilterCompleted bool
+var listFilterOutCompelted bool
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -43,13 +46,28 @@ Examples:
   'lcfetch list -d easy -t array,string'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		problemSet := getFilteredProblemSet(listDifficulty, listTopics, listIncludePaid)
+
+		if listFilterCompleted && listFilterOutCompelted {
+			fmt.Println("'-i' and '-c' flags set, pick one or the other!")
+			return
+		}
+
+		// Filter complete/incomplete
+		if listFilterCompleted {
+			problemSet = problem.FilterCompleted(problemSet)
+		}
+		if listFilterOutCompelted {
+			problemSet = problem.FilterOutCompleted(problemSet)
+		}
+
 		if len(problemSet) == 0 {
+			fmt.Println("No problems found, try widening your search.")
 			return
 		}
 
 		var listBuf bytes.Buffer
 		listBuf.WriteString("-----------------------------------------\n")
-		listBuf.WriteString("ID\tComplete\tName\t\t|\n")
+		listBuf.WriteString("ID\tComplete?\tName\t\t|\n")
 		listBuf.WriteString("-----------------------------------------\n")
 		for _, problem := range problemSet {
 			completedCh := ' '
@@ -78,4 +96,8 @@ func init() {
 		"difficulty of problems to list")
 	listCmd.Flags().BoolVarP(&listIncludePaid, "paid", "p", false,
 		"include paid/premium problems")
+	listCmd.Flags().BoolVarP(&listFilterCompleted, "completed", "c", false,
+		"list only completed problems")
+	listCmd.Flags().BoolVarP(&listFilterOutCompelted, "incomplete", "i", false,
+		"list only incomplete problems")
 }

@@ -8,6 +8,8 @@ const (
 	HARD   int = 3
 )
 
+var DIFFICULTY_STRINGS = []string{"easy", "medium", "hard"}
+
 type Problem struct {
 	Name       string   `json:"name"`
 	Id         int      `json:"id"`
@@ -58,11 +60,25 @@ func FilterOutPaid(problems []*Problem) []*Problem {
 	return ret
 }
 
+// Return problem set containing only incomplete problems.
 func FilterOutCompleted(problems []*Problem) []*Problem {
 	var ret []*Problem
 
 	for _, prob := range problems {
 		if !prob.Completed {
+			ret = append(ret, prob)
+		}
+	}
+
+	return ret
+}
+
+// Return problem set containing only completed problems.
+func FilterCompleted(problems []*Problem) []*Problem {
+	var ret []*Problem
+
+	for _, prob := range problems {
+		if prob.Completed {
 			ret = append(ret, prob)
 		}
 	}
