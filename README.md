@@ -1,4 +1,4 @@
-## lcfetch
+# lcfetch
 
 Program used to retrieve Leetcode problem URLs.
 
@@ -26,7 +26,10 @@ Examples:
   -t, --topics strings      topic(s) to select problem from (comma-separated, no spaces)
 ```
 
-## lcfetch complete
+
+## Commands
+
+### lcfetch complete
 
 Mark one or more problems complete, prevening them from showing up when requesting
 a random problem.
@@ -41,33 +44,14 @@ Examples:
 lcfetch complete [flags]
 ```
 
-### Options
+#### Options
 
 ```
   -h, --help   help for complete
 ```
 
-## lcfetch get
 
-Lookup one or more problems by Leetcode ID.
-
-```
-lcfetch get [flags]
-```
-
-Examples:
-```
-  lcfetch get 521
-  lcfetch get 72 1262 980
-```
-
-### Options
-
-```
-  -h, --help   help for get
-```
-
-## lcfetch incomplete
+### lcfetch incomplete
 
 Mark more ore more problems, allowing them to show up when requesting a random problem.
 
@@ -81,13 +65,32 @@ Examples:
   lcfetch incomplete 628 12 52
 ```
 
-### Options
+#### Options
 
 ```
   -h, --help   help for incomplete
 ```
 
-## lcfetch list
+
+### lcfetch stats
+
+Print details about completed questions per category and difficulty.
+
+```
+lcfetch stats [flags]
+```
+
+#### Options
+
+```
+  -d, --difficulty string   difficulty of problems to print with stats (default "all")
+  -h, --help                help for stats
+  -p, --paid                include paid/premium questions
+  -t, --topic string        topic of problems to print with stats (comma-separated, no spaces)
+```
+
+
+### lcfetch list
 
 Print a list of the Leetcode problems, filtered by difficulty and/or topic.
 
@@ -101,7 +104,7 @@ Examples:
   lcfetch list -d easy -t array,string
 ```
 
-### Options
+#### Options
 
 ```
   -c, --completed           list only completed problems
@@ -112,24 +115,29 @@ Examples:
   -t, --topics strings      topic(s) of problems to list (comma-separated, no spaces)
 ```
 
-## lcfetch stats
 
-Print details about completed questions per category and difficulty.
+### lcfetch get
 
-```
-lcfetch stats [flags]
-```
-
-### Options
+Lookup one or more problems by Leetcode ID.
 
 ```
-  -d, --difficulty string   difficulty of problems to print with stats (default "all")
-  -h, --help                help for stats
-  -p, --paid                include paid/premium questions
-  -t, --topic string        topic of problems to print with stats (comma-separated, no spaces)
+lcfetch get [flags]
 ```
 
-## lcfetch topics
+Examples:
+```
+  lcfetch get 521
+  lcfetch get 72 1262 980
+```
+
+#### Options
+
+```
+  -h, --help   help for get
+```
+
+
+### lcfetch topics
 
 List all problem topics on Leetcode.
 
@@ -137,9 +145,8 @@ List all problem topics on Leetcode.
 lcfetch topics [flags]
 ```
 
-### Options
+#### Options
 
 ```
   -h, --help   help for topics
 ```
-cobra.Command
