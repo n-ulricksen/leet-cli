@@ -34,14 +34,14 @@ Examples:
 Mark one or more problems complete, prevening them from showing up when requesting
 a random problem.
 
+```
+lcfetch complete [flags]
+```
+
 Examples:
 ```
   lcfetch complete 1337
   lcfetch complete 52 12 628
-```
-
-```
-lcfetch complete [flags]
 ```
 
 #### Options
