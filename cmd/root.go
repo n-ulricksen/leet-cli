@@ -32,8 +32,6 @@ import (
 	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/problem"
 
-	// "github.com/ulricksennick/lcfetch/problem"
-
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
@@ -97,7 +95,7 @@ func getFilteredProblemSet(difficulty string, topics []string, includePaid bool)
 	}
 	if len(problemSet) == 0 {
 		fmt.Println("No problems found with the provided topic...")
-		fmt.Println("Run 'lcfetch list -t' to list all topics.")
+		fmt.Println("Run 'lcfetch topics' to list all topics.")
 		return []*problem.Problem{}
 	}
 

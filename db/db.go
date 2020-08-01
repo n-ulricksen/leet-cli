@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	tiedot "github.com/HouzuoGuo/tiedot/db"
-	// "github.com/HouzuoGuo/tiedot/dberr"
 	"github.com/ulricksennick/lcfetch/problem"
 )
 
@@ -207,7 +206,6 @@ func (db *DB) getProblemId(displayId int) (int, error) {
 	return problemId, nil
 }
 
-// This function is so hacky... ＞︿＜
 func problemToJsonMap(problem *problem.Problem) map[string]interface{} {
 	var jsonMap map[string]interface{}
 
