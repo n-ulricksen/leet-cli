@@ -50,6 +50,7 @@ lcfetch complete [flags]
   -h, --help   help for complete
 ```
 
+---
 
 ### lcfetch incomplete
 
@@ -71,6 +72,7 @@ Examples:
   -h, --help   help for incomplete
 ```
 
+---
 
 ### lcfetch stats
 
@@ -89,6 +91,7 @@ lcfetch stats [flags]
   -t, --topic string        topic of problems to print with stats (comma-separated, no spaces)
 ```
 
+---
 
 ### lcfetch list
 
@@ -115,6 +118,7 @@ Examples:
   -t, --topics strings      topic(s) of problems to list (comma-separated, no spaces)
 ```
 
+---
 
 ### lcfetch get
 
@@ -136,6 +140,7 @@ Examples:
   -h, --help   help for get
 ```
 
+---
 
 ### lcfetch topics
 
