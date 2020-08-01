@@ -12,8 +12,8 @@ lcfetch [flags]
 
 Examples:
 ```
-  lcfetch -d hard -t dynamic-programming
-  lcfetch -d medium -t array,two-pointers
+lcfetch -d hard -t dynamic-programming
+lcfetch -d medium -t array,two-pointers
 ```
 
 ### Options
@@ -40,8 +40,8 @@ lcfetch complete [flags]
 
 Examples:
 ```
-  lcfetch complete 1337
-  lcfetch complete 52 12 628
+lcfetch complete 1337
+lcfetch complete 52 12 628
 ```
 
 #### Options
@@ -62,8 +62,8 @@ lcfetch incomplete [flags]
 
 Examples:
 ```
-  lcfetch incomplete 1337
-  lcfetch incomplete 628 12 52
+lcfetch incomplete 1337
+lcfetch incomplete 628 12 52
 ```
 
 #### Options
@@ -103,8 +103,8 @@ lcfetch list [flags]
 
 Examples:
 ```
-  lcfetch list
-  lcfetch list -d easy -t array,string
+lcfetch list
+lcfetch list -d easy -t array,string
 ```
 
 #### Options
@@ -130,8 +130,8 @@ lcfetch get [flags]
 
 Examples:
 ```
-  lcfetch get 521
-  lcfetch get 72 1262 980
+lcfetch get 521
+lcfetch get 72 1262 980
 ```
 
 #### Options
