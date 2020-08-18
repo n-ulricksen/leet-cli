@@ -1,10 +1,9 @@
-package cmd
+package db
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/parser"
 	"github.com/ulricksennick/lcfetch/problem"
 )
@@ -27,13 +26,13 @@ func main() {
 }
 
 func dropProblems() {
-	database, err := db.CreateDB()
+	database, err := CreateDB()
 	must(err)
 	database.DropAllProblems()
 }
 
 func testFilters() {
-	database, err := db.CreateDB()
+	database, err := CreateDB()
 	must(err)
 	probs, err := database.GetAllProblems()
 
@@ -49,7 +48,7 @@ func testFilters() {
 }
 
 func printAllProblems() {
-	database, err := db.CreateDB()
+	database, err := CreateDB()
 	must(err)
 	probs, err := database.GetAllProblems()
 	must(err)
@@ -59,7 +58,7 @@ func printAllProblems() {
 	fmt.Printf("Fetched %d problems.\n", len(probs))
 }
 
-func fetchAndParseProblems() {
+func FetchAndParseProblems() {
 	// Open a connection to Leetcode with the user-specified query params
 	httpResp, err := http.Get(leetcodeApiUrl)
 	must(err)
@@ -72,7 +71,7 @@ func fetchAndParseProblems() {
 	problems, err := parser.ParseProblems(htmlReader)
 	must(err)
 
-	database, err := db.CreateDB()
+	database, err := CreateDB()
 	must(err)
 	for _, problem := range problems {
 		database.InsertProblem(problem)

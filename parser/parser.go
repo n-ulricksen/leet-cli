@@ -11,6 +11,7 @@ import (
 const (
 	leetcodeBaseUrl = "https://leetcode.com/problems/"
 	problemTopicUrl = "https://leetcode.com/problems/api/tags/"
+	leetcodeApiUrl  = "https://leetcode.com/api/problems/all/"
 )
 
 type tmpProblems struct {

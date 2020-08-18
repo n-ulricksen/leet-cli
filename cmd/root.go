@@ -51,6 +51,17 @@ var rootCmd = &cobra.Command{
 Examples:
   'lcfetch -d hard -t dynamic-programming'
   'lcfetch -d medium -t array,two-pointers'`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		database, err := db.CreateDB()
+		must(err)
+
+		problemSet, err := database.GetAllProblems()
+		must(err)
+
+		if len(problemSet) == 0 {
+			db.FetchAndParseProblems()
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Fetch all of the problems, and print a random one after applying
 		// the appropriate filters.
@@ -174,5 +185,11 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	}
+}
+
+func must(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
