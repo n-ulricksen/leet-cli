@@ -10,7 +10,7 @@ import (
 
 const (
 	defaultDbFilePath = "/tmp/leetcode"
-	collectionName    = "problems"
+	collection        = "problems"
 )
 
 type DB struct {
@@ -26,13 +26,13 @@ func CreateDB() (*DB, error) {
 	}
 
 	// Create collection of problems
-	conn.Create(collectionName)
+	conn.Create(collection)
 	return &DB{conn}, nil
 }
 
 // Insert a problem into the database, returns the problem's database ID
 func (db *DB) InsertProblem(problem *problem.Problem) (int, error) {
-	coll := db.conn.Use(collectionName)
+	coll := db.conn.Use(collection)
 
 	problemJson := problemToJsonMap(problem)
 
@@ -44,12 +44,26 @@ func (db *DB) InsertProblem(problem *problem.Problem) (int, error) {
 	return docID, err
 }
 
+// Insert multiple problems into the database
+func (db *DB) InsertProblems(problems map[int]*problem.Problem) error {
+	var err error
+
+	for _, problem := range problems {
+		_, err = db.InsertProblem(problem)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Get a slice of pointers to all problems in the database
 func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 	var ret []*problem.Problem
 	var err error
 
-	coll := db.conn.Use(collectionName)
+	coll := db.conn.Use(collection)
 
 	coll.ForEachDoc(func(id int, doc []byte) bool {
 		prob, e := documentToProblem(doc)
@@ -73,7 +87,7 @@ func (db *DB) GetProblemsByDisplayId(ids []int) ([]*problem.Problem, error) {
 	var ret []*problem.Problem
 	var err error
 
-	coll := db.conn.Use(collectionName)
+	coll := db.conn.Use(collection)
 
 	// Used to check for target IDs when iterating over all problems
 	displayIds := make(map[int]bool)
@@ -108,7 +122,7 @@ func (db *DB) SetProblemCompleted(displayId int) error {
 		return err
 	}
 
-	coll := db.conn.Use(collectionName)
+	coll := db.conn.Use(collection)
 
 	doc, err := coll.Read(updateId)
 	if err != nil {
@@ -131,7 +145,7 @@ func (db *DB) SetProblemIncomplete(displayId int) error {
 		return err
 	}
 
-	coll := db.conn.Use(collectionName)
+	coll := db.conn.Use(collection)
 
 	doc, err := coll.Read(updateId)
 	if err != nil {
@@ -154,7 +168,7 @@ func (db *DB) SetProblemBad(displayId int) error {
 		return err
 	}
 
-	coll := db.conn.Use(collectionName)
+	coll := db.conn.Use(collection)
 	doc, err := coll.Read(updateId)
 	if err != nil {
 		return err
@@ -171,8 +185,8 @@ func (db *DB) SetProblemBad(displayId int) error {
 
 // Drop the "problems" collection, create a new empty one
 func (db *DB) DropAllProblems() {
-	db.conn.Drop(collectionName)
-	db.conn.Create(collectionName)
+	db.conn.Drop(collection)
+	db.conn.Create(collection)
 }
 
 // Lookup a problem ID in the database by its leetcode displayId
@@ -180,7 +194,7 @@ func (db *DB) getProblemId(displayId int) (int, error) {
 	var problemId int = -1
 	var err error
 
-	coll := db.conn.Use(collectionName)
+	coll := db.conn.Use(collection)
 
 	coll.ForEachDoc(func(id int, doc []byte) bool {
 		prob, e := documentToProblem(doc)

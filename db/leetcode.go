@@ -13,7 +13,7 @@ const (
 )
 
 func main() {
-	// TODO: URL query params (flags)
+	// TODO: write proper tests, dweeb..
 
 	// dropProblems()
 
@@ -25,6 +25,30 @@ func main() {
 
 }
 
+func FetchAndParseProblems() {
+	httpResp, err := http.Get(leetcodeApiUrl)
+	must(err)
+
+	htmlReader := httpResp.Body
+	defer htmlReader.Close()
+
+	problems, err := parser.ParseProblems(htmlReader)
+	must(err)
+
+	database, err := CreateDB()
+	err = database.InsertProblems(problems)
+	must(err)
+
+	fmt.Printf("Fetched %d problems.\n", len(problems))
+}
+
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+// Test stuff
 func dropProblems() {
 	database, err := CreateDB()
 	must(err)
@@ -56,32 +80,4 @@ func printAllProblems() {
 		fmt.Printf("%v\t%v\n", prob.DisplayId, prob.Name)
 	}
 	fmt.Printf("Fetched %d problems.\n", len(probs))
-}
-
-func FetchAndParseProblems() {
-	// Open a connection to Leetcode with the user-specified query params
-	httpResp, err := http.Get(leetcodeApiUrl)
-	must(err)
-
-	// Get the JSON body from the response
-	htmlReader := httpResp.Body
-	defer htmlReader.Close()
-
-	// Parse the questions from the JSON
-	problems, err := parser.ParseProblems(htmlReader)
-	must(err)
-
-	database, err := CreateDB()
-	must(err)
-	for _, problem := range problems {
-		database.InsertProblem(problem)
-	}
-
-	fmt.Printf("Fetched %d problems.\n", len(problems))
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
