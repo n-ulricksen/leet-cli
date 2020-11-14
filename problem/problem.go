@@ -15,6 +15,7 @@ type Problem struct {
 	Id         int      `json:"id"`
 	DisplayId  int      `json:"displayId"` // identify a problem on Leetcode website
 	Url        string   `json:"url"`
+	Slug       string   `json:"titleSlug"`
 	Difficulty int      `json:"difficulty"`
 	Topics     []string `json:"topics"`
 	Paid       bool     `json:"paid"`

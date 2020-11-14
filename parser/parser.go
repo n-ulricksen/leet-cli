@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	leetcodeBaseUrl = "https://leetcode.com/problems/"
-	problemTopicUrl = "https://leetcode.com/problems/api/tags/"
-	leetcodeApiUrl  = "https://leetcode.com/api/problems/all/"
+	leetcodeBaseUrl    = "https://leetcode.com/"
+	leetcodeProblemUrl = "https://leetcode.com/problems/"
+	problemTopicUrl    = "https://leetcode.com/problems/api/tags/"
+	leetcodeApiUrl     = "https://leetcode.com/api/problems/all/"
 )
 
 type tmpProblems struct {
@@ -67,7 +68,8 @@ func ParseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 			Name:       q.Stat.Name,
 			Id:         q.Stat.Id,
 			DisplayId:  q.Stat.DisplayId,
-			Url:        leetcodeBaseUrl + q.Stat.Slug,
+			Slug:       q.Stat.Slug,
+			Url:        leetcodeProblemUrl + q.Stat.Slug,
 			Difficulty: q.Difficulty["level"],
 			Paid:       q.Paid,
 		}
