@@ -2,9 +2,11 @@ package parser
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
+	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/problem"
 )
 
@@ -32,6 +34,20 @@ type slugs struct {
 		Slug      string `json:"slug"`
 		Questions []int  `json:"questions"`
 	} `json:"topics"`
+}
+
+func FetchAndStoreProblems() {
+	htmlReader := getHttpBody(leetcodeApiUrl)
+	defer htmlReader.Close()
+
+	problems, err := ParseProblems(htmlReader)
+	must(err)
+
+	database, err := db.CreateDB()
+	err = database.InsertProblems(problems)
+	must(err)
+
+	fmt.Printf("Fetched %d problems.\n", len(problems))
 }
 
 func ParseProblems(r io.Reader) (map[int]*problem.Problem, error) {
@@ -62,6 +78,12 @@ func ParseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 	return problems, nil
 }
 
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 // Get the list of problems/topics, assign topics to appropriate problems
 func updateProblemTopics(problems map[int]*problem.Problem) {
 	if len(problems) == 0 {
@@ -85,7 +107,7 @@ func updateProblemTopics(problems map[int]*problem.Problem) {
 }
 
 func getHttpBody(url string) io.ReadCloser {
-	httpResp, err := http.Get(problemTopicUrl)
+	httpResp, err := http.Get(url)
 	if err != nil {
 		panic(err)
 	}

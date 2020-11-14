@@ -2,9 +2,7 @@ package db
 
 import (
 	"fmt"
-	"net/http"
 
-	"github.com/ulricksennick/lcfetch/parser"
 	"github.com/ulricksennick/lcfetch/problem"
 )
 
@@ -13,7 +11,7 @@ const (
 )
 
 func main() {
-	// TODO: write proper tests, dweeb..
+	// TODO: write proper tests and delete this file
 
 	// dropProblems()
 
@@ -21,25 +19,8 @@ func main() {
 
 	// printAllProblems()
 
-	testFilters()
+	// testFilters()
 
-}
-
-func FetchAndParseProblems() {
-	httpResp, err := http.Get(leetcodeApiUrl)
-	must(err)
-
-	htmlReader := httpResp.Body
-	defer htmlReader.Close()
-
-	problems, err := parser.ParseProblems(htmlReader)
-	must(err)
-
-	database, err := CreateDB()
-	err = database.InsertProblems(problems)
-	must(err)
-
-	fmt.Printf("Fetched %d problems.\n", len(problems))
 }
 
 func must(err error) {

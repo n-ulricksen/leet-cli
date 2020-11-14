@@ -30,6 +30,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ulricksennick/lcfetch/db"
+	"github.com/ulricksennick/lcfetch/parser"
 	"github.com/ulricksennick/lcfetch/problem"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -59,7 +60,7 @@ Examples:
 		must(err)
 
 		if len(problemSet) == 0 {
-			db.FetchAndParseProblems()
+			parser.FetchAndStoreProblems()
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
