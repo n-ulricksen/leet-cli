@@ -24,12 +24,17 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/parser"
+	"github.com/ulricksennick/lcfetch/util"
 )
+
+var codeLanguage string
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
@@ -77,15 +82,40 @@ Examples:
 			case 3:
 				difficulty = "Hard"
 			}
-
 			outBuf.WriteString(fmt.Sprintf("\n%s\t%s\n\n", difficulty, prob.Url))
 
-			// TODO: get problem details, create new file with code definition
 			problemDetails := parser.GetProblemDetails(prob.Slug)
-			fmt.Println(problemDetails.CodeDefinitions["golang"])
+			sourceCode := problemDetails.CodeDefinitions[codeLanguage]
+			if len(sourceCode) == 0 {
+				var buf bytes.Buffer
+				buf.WriteString(fmt.Sprintf("Invalid language: %v.\n\n",
+					codeLanguage))
+				buf.WriteString("Available languages:\n")
+				for lang := range problemDetails.CodeDefinitions {
+					buf.WriteString(lang)
+					buf.WriteByte('\n')
+				}
+				fmt.Println(buf.String())
+				os.Exit(1)
+			}
+
+			filename := fmt.Sprintf("%s.%s", prob.Slug, util.FileExt[codeLanguage])
+			ioutil.WriteFile(filename, []byte(sourceCode), 0664)
+			outBuf.WriteString(fmt.Sprintln("Problem code defintion stored at: " +
+				filename))
 		}
 		fmt.Print(outBuf.String())
 	},
+}
+
+func getMapKeys(m map[string]string) []string {
+	ret := make([]string, len(m))
+	i := 0
+	for k := range m {
+		ret[i] = k
+		i++
+	}
+	return ret
 }
 
 func init() {
@@ -99,5 +129,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	getCmd.Flags().StringVarP(&codeLanguage, "language", "l", "javascript",
+		"programming language for code definition")
 }
