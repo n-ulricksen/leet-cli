@@ -28,6 +28,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ulricksennick/lcfetch/db"
+	"github.com/ulricksennick/lcfetch/parser"
 )
 
 // getCmd represents the get command
@@ -78,6 +79,10 @@ Examples:
 			}
 
 			outBuf.WriteString(fmt.Sprintf("\n%s\t%s\n\n", difficulty, prob.Url))
+
+			// TODO: get problem details, create new file with code definition
+			problemDetails := parser.GetProblemDetails(prob.Slug)
+			fmt.Println(problemDetails.CodeDefinitions["golang"])
 		}
 		fmt.Print(outBuf.String())
 	},
