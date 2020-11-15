@@ -11,10 +11,11 @@ import (
 )
 
 const (
-	leetcodeBaseUrl    = "https://leetcode.com/"
-	leetcodeProblemUrl = "https://leetcode.com/problems/"
-	problemTopicUrl    = "https://leetcode.com/problems/api/tags/"
-	leetcodeApiUrl     = "https://leetcode.com/api/problems/all/"
+	leetcodeBaseUrl    string = "https://leetcode.com/"
+	leetcodeProblemUrl        = "https://leetcode.com/problems/"
+	problemTopicUrl           = "https://leetcode.com/problems/api/tags/"
+	problemDetailsUrl         = "https://leetcode.com/graphql"
+	leetcodeApiUrl            = "https://leetcode.com/api/problems/all/"
 )
 
 type tmpProblems struct {
@@ -41,7 +42,7 @@ func FetchAndStoreProblems() {
 	htmlReader := getHttpBody(leetcodeApiUrl)
 	defer htmlReader.Close()
 
-	problems, err := ParseProblems(htmlReader)
+	problems, err := parseProblems(htmlReader)
 	must(err)
 
 	database, err := db.CreateDB()
@@ -51,7 +52,7 @@ func FetchAndStoreProblems() {
 	fmt.Printf("Fetched %d problems.\n", len(problems))
 }
 
-func ParseProblems(r io.Reader) (map[int]*problem.Problem, error) {
+func parseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 	// Decode the JSON
 	decoded := new(tmpProblems)
 	err := json.NewDecoder(r).Decode(decoded)

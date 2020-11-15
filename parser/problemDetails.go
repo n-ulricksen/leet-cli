@@ -8,9 +8,8 @@ import (
 )
 
 const (
-	problemDetailsUrl string = "https://leetcode.com/graphql"
-	gqlOperation      string = "getQuestionDetail"
-	gqlQuery          string = `query getQuestionDetail($titleSlug: String!) {
+	gqlOperation string = "getQuestionDetail"
+	gqlQuery            = `query getQuestionDetail($titleSlug: String!) {
                question(titleSlug: $titleSlug) {
                  content
                  stats
@@ -25,14 +24,13 @@ const (
             }`
 )
 
-type RequestPayload struct {
-	OperationName string           `json:"operationName"`
-	Query         string           `json:"query"`
-	Variables     PayloadVariables `json:"variables"`
-}
-
-type PayloadVariables struct {
-	TitleSlug string `json:"titleSlug"`
+type ProblemDetails struct {
+	CodeDefinitions map[string]string
+	Likes           int
+	Dislikes        int
+	Content         string // TODO: figure out structure and missing data
+	Stats           string // TODO: figure this out too..
+	SampleTestCase  string // TODO: find other test cases, setup tests
 }
 
 type ProblemDetailsResponse struct {
@@ -50,22 +48,55 @@ type ProblemDetailsResponse struct {
 	} `json:"data"`
 }
 
-type CodeDefinition []struct {
+type CodeDefinitionList []struct {
 	Value       string `json:"value"`
 	Test        string `json:"test"`
 	DefaultCode string `json:"defaultCode"`
 }
 
-type ProblemDetails struct {
-	CodeDefinitions map[string]string
-	Likes           int
-	Dislikes        int
-	Content         string // TODO: figure out structure and missing data
-	Stats           string // TODO: figure this out too..
-	SampleTestCase  string // TODO: find other test cases, setup tests
+type RequestPayload struct {
+	OperationName string           `json:"operationName"`
+	Query         string           `json:"query"`
+	Variables     PayloadVariables `json:"variables"`
+}
+
+type PayloadVariables struct {
+	TitleSlug string `json:"titleSlug"`
 }
 
 func GetProblemDetails(titleSlug string) *ProblemDetails {
+	req := buildProblemDetailsRequest(titleSlug)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	must(err)
+	defer resp.Body.Close()
+
+	problemDetailsResponse := new(ProblemDetailsResponse)
+	err = json.NewDecoder(resp.Body).Decode(problemDetailsResponse)
+	must(err)
+
+	codeDefinitionList := new(CodeDefinitionList)
+	json.Unmarshal([]byte(problemDetailsResponse.Data.Question.CodeDefinition),
+		codeDefinitionList)
+
+	// Map languages to code definitions
+	codeDefinitions := make(map[string]string)
+	for _, lang := range *codeDefinitionList {
+		codeDefinitions[lang.Value] = lang.DefaultCode
+	}
+
+	return &ProblemDetails{
+		CodeDefinitions: codeDefinitions,
+		Likes:           problemDetailsResponse.Data.Question.Likes,
+		Dislikes:        problemDetailsResponse.Data.Question.Dislikes,
+		Content:         problemDetailsResponse.Data.Question.Content,
+		Stats:           problemDetailsResponse.Data.Question.Stats,
+		SampleTestCase:  problemDetailsResponse.Data.Question.SampleTestCase,
+	}
+}
+
+func buildProblemDetailsRequest(titleSlug string) *http.Request {
 	requestPayload := createRequestPayload(titleSlug)
 
 	var buf bytes.Buffer
@@ -85,33 +116,7 @@ func GetProblemDetails(titleSlug string) *ProblemDetails {
 	req.Header.Set("Origin", leetcodeBaseUrl)
 	req.Header.Set("Referer", leetcodeProblemUrl+titleSlug)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	must(err)
-	defer resp.Body.Close()
-
-	problemDetailsResponse := new(ProblemDetailsResponse)
-	err = json.NewDecoder(resp.Body).Decode(problemDetailsResponse)
-	must(err)
-
-	codeDefinition := new(CodeDefinition)
-	json.Unmarshal([]byte(problemDetailsResponse.Data.Question.CodeDefinition),
-		codeDefinition)
-
-	// Map languages to code definitions
-	codeDefinitions := make(map[string]string)
-	for _, lang := range *codeDefinition {
-		codeDefinitions[lang.Value] = lang.DefaultCode
-	}
-
-	return &ProblemDetails{
-		CodeDefinitions: codeDefinitions,
-		Likes:           problemDetailsResponse.Data.Question.Likes,
-		Dislikes:        problemDetailsResponse.Data.Question.Dislikes,
-		Content:         problemDetailsResponse.Data.Question.Content,
-		Stats:           problemDetailsResponse.Data.Question.Stats,
-		SampleTestCase:  problemDetailsResponse.Data.Question.SampleTestCase,
-	}
+	return req
 }
 
 func createRequestPayload(titleSlug string) []byte {
