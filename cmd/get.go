@@ -32,9 +32,14 @@ import (
 	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/parser"
 	"github.com/ulricksennick/lcfetch/util"
+
+	"github.com/jaytaylor/html2text"
 )
 
+// TODO: get codeLanguage from configurable options
 var codeLanguage string
+
+var outputLineLength = 80
 
 // getCmd represents the get command
 var getCmd = &cobra.Command{
@@ -68,6 +73,10 @@ Examples:
 
 		var outBuf bytes.Buffer
 		for _, prob := range problemSet {
+			for i := 0; i < outputLineLength; i++ {
+				outBuf.WriteByte('~')
+			}
+			outBuf.WriteByte('\n')
 			outBuf.WriteString(fmt.Sprintf("#%d\t%s", prob.DisplayId, prob.Name))
 			if prob.Paid {
 				outBuf.WriteString(" (Premium)")
@@ -85,7 +94,8 @@ Examples:
 			outBuf.WriteString(fmt.Sprintf("\n%s\t%s\n\n", difficulty, prob.Url))
 
 			problemDetails := parser.GetProblemDetails(prob.Slug)
-			sourceCode := problemDetails.CodeDefinitions[codeLanguage]
+
+			sourceCode := []byte(problemDetails.CodeDefinitions[codeLanguage])
 			if len(sourceCode) == 0 {
 				var buf bytes.Buffer
 				buf.WriteString(fmt.Sprintf("Invalid language: %v.\n\n",
@@ -99,10 +109,24 @@ Examples:
 				os.Exit(1)
 			}
 
+			problemContent, err := html2text.FromString(problemDetails.Content)
+			if err != nil {
+				fmt.Println("Unable to parse problem content")
+				os.Exit(1)
+			}
+			problemDescription := util.Commentify(problemContent, codeLanguage)
+
 			filename := fmt.Sprintf("%s.%s", prob.Slug, util.FileExt[codeLanguage])
-			ioutil.WriteFile(filename, []byte(sourceCode), 0664)
+			fileContent := bytes.Join([][]byte{problemDescription, sourceCode},
+				[]byte{'\n', '\n'})
+
+			ioutil.WriteFile(filename, fileContent, 0664)
 			outBuf.WriteString(fmt.Sprintln("Problem code defintion stored at: " +
 				filename))
+			for i := 0; i < outputLineLength; i++ {
+				outBuf.WriteByte('~')
+			}
+			outBuf.WriteByte('\n')
 		}
 		fmt.Print(outBuf.String())
 	},
