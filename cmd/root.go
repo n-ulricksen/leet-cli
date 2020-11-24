@@ -77,8 +77,6 @@ Examples:
 		// Pick and print a random problem to the screen
 		rand.Seed(time.Now().UnixNano())
 		selected := problemSet[rand.Intn(len(problemSet))]
-		fmt.Printf("%d problems found, give this one a shot:\n\n",
-			len(problemSet))
 		fmt.Printf("#%d - %s\n", selected.DisplayId, selected.Name)
 		fmt.Println(selected.Url)
 	},
