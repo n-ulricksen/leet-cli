@@ -59,12 +59,14 @@ Examples:
 		problemSet, err := database.GetAllProblems()
 		must(err)
 
-		// Fetch problem topics - they are added frequently
 		// TODO: create a command to update problems/topics
-		parser.FetchAndStoreTopics()
 
 		if len(problemSet) == 0 {
+			fmt.Println("Updating problems...")
+			parser.FetchAndStoreTopics()
 			parser.FetchAndStoreProblems()
+			fmt.Println("Update complete.")
+			fmt.Println()
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {

@@ -2,7 +2,6 @@ package parser
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -48,13 +47,10 @@ func FetchAndStoreProblems() {
 	database, err := db.CreateDB()
 	err = database.InsertProblems(problems)
 	must(err)
-
-	fmt.Printf("Fetched %d problems.\n", len(problems))
 }
 
 func FetchAndStoreTopics() {
 	topics := fetchTopics()
-	fmt.Println("topics:", topics)
 
 	database, err := db.CreateDB()
 	database.DropAllTopics()

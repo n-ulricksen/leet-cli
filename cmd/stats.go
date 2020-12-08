@@ -27,6 +27,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ulricksennick/lcfetch/db"
+	"github.com/ulricksennick/lcfetch/parser"
 	"github.com/ulricksennick/lcfetch/problem"
 	"github.com/ulricksennick/lcfetch/util"
 )
@@ -40,6 +41,9 @@ var statsCmd = &cobra.Command{
 	Use:   "stats",
 	Short: "Print details about completed questions per category and difficulty.",
 	Long:  `Print details about completed questions per category and difficulty.`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		parser.FetchAndStoreTopics()
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Number of columns wide to print stats to screen
 		const columnCount = 2
@@ -119,8 +123,6 @@ func createCompletedMap(problemSet []*problem.Problem) map[string][]int {
 	for _, topic := range topics {
 		completedCount[topic] = make([]int, 2)
 	}
-	// DEBUG
-	fmt.Printf("%#v\n", completedCount)
 
 	// Compute completed/total values
 	for _, prob := range problemSet {
