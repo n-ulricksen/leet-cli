@@ -82,7 +82,8 @@ var statsCmd = &cobra.Command{
 		// Print topics
 		var sorted []string
 		if len(statsTopic) == 0 {
-			sorted = problem.GetSortedTopics()
+			sorted, err = db.GetSortedTopicStrings()
+			must(err)
 		} else {
 			sorted = []string{statsTopic}
 		}
@@ -113,9 +114,13 @@ func createCompletedMap(problemSet []*problem.Problem) map[string][]int {
 	completedCount["easy"] = make([]int, 2)
 	completedCount["medium"] = make([]int, 2)
 	completedCount["hard"] = make([]int, 2)
-	for _, topic := range problem.GetSortedTopics() {
+	topics, err := db.GetSortedTopicStrings()
+	must(err)
+	for _, topic := range topics {
 		completedCount[topic] = make([]int, 2)
 	}
+	// DEBUG
+	fmt.Printf("%#v\n", completedCount)
 
 	// Compute completed/total values
 	for _, prob := range problemSet {
@@ -142,6 +147,7 @@ func createCompletedMap(problemSet []*problem.Problem) map[string][]int {
 
 		// Topic
 		for _, topic := range prob.Topics {
+			// fmt.Println("topic:", topic)
 			if prob.Completed {
 				completedCount[topic][0]++
 			}

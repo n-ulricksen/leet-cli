@@ -26,7 +26,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/ulricksennick/lcfetch/problem"
+	"github.com/ulricksennick/lcfetch/db"
 )
 
 // topicsCmd represents the topics command
@@ -38,7 +38,8 @@ var topicsCmd = &cobra.Command{
 		// Number of columns to split topic list into when printing
 		const columnCount = 3
 
-		sorted := problem.GetSortedTopics()
+		sorted, err := db.GetSortedTopicStrings()
+		must(err)
 
 		var outBuf bytes.Buffer
 		outBuf.WriteString("Leetcode problem topics:\n")

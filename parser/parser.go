@@ -31,7 +31,7 @@ type tmpProblems struct {
 	} `json:"stat_status_pairs"`
 }
 
-type slugs struct {
+type tmpTopics struct {
 	Topics []struct {
 		Slug      string `json:"slug"`
 		Questions []int  `json:"questions"`
@@ -50,6 +50,16 @@ func FetchAndStoreProblems() {
 	must(err)
 
 	fmt.Printf("Fetched %d problems.\n", len(problems))
+}
+
+func FetchAndStoreTopics() {
+	topics := fetchTopics()
+	fmt.Println("topics:", topics)
+
+	database, err := db.CreateDB()
+	database.DropAllTopics()
+	err = database.InsertTopics(topics)
+	must(err)
 }
 
 func parseProblems(r io.Reader) (map[int]*problem.Problem, error) {
@@ -81,6 +91,25 @@ func parseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 	return problems, nil
 }
 
+func fetchTopics() []*problem.Topic {
+	httpBody := getHttpBody(problemTopicUrl)
+	defer httpBody.Close()
+
+	slugsTmp := new(tmpTopics)
+	json.NewDecoder(httpBody).Decode(slugsTmp)
+
+	topics := make([]*problem.Topic, len(slugsTmp.Topics))
+	for i, t := range slugsTmp.Topics {
+		newTopic := &problem.Topic{
+			Slug:      t.Slug,
+			Questions: t.Questions,
+		}
+		topics[i] = newTopic
+	}
+
+	return topics
+}
+
 func must(err error) {
 	if err != nil {
 		panic(err)
@@ -93,13 +122,13 @@ func updateProblemTopics(problems map[int]*problem.Problem) {
 		return
 	}
 
-	httpBody := getHttpBody(problemTopicUrl)
-	defer httpBody.Close()
+	database, err := db.CreateDB()
+	must(err)
 
-	slugsTmp := new(slugs)
-	json.NewDecoder(httpBody).Decode(slugsTmp)
+	topics, err := database.GetAllTopics()
+	must(err)
 
-	for _, topic := range slugsTmp.Topics {
+	for _, topic := range topics {
 		for _, questionId := range topic.Questions {
 			if problems[questionId] == nil {
 				continue

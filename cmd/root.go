@@ -59,6 +59,10 @@ Examples:
 		problemSet, err := database.GetAllProblems()
 		must(err)
 
+		// Fetch problem topics - they are added frequently
+		// TODO: create a command to update problems/topics
+		parser.FetchAndStoreTopics()
+
 		if len(problemSet) == 0 {
 			parser.FetchAndStoreProblems()
 		}

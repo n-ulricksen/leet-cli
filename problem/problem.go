@@ -1,7 +1,5 @@
 package problem
 
-import "sort"
-
 const (
 	EASY   int = 1
 	MEDIUM int = 2
@@ -85,13 +83,4 @@ func FilterCompleted(problems []*Problem) []*Problem {
 	}
 
 	return ret
-}
-
-func GetSortedTopics() []string {
-	var topics []string
-	for _, topic := range Topics {
-		topics = append(topics, topic)
-	}
-	sort.Strings(topics)
-	return topics
 }
