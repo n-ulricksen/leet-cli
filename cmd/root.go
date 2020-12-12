@@ -22,9 +22,11 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -85,6 +87,25 @@ Examples:
 		selected := problemSet[rand.Intn(len(problemSet))]
 		fmt.Printf("#%d - %s\n", selected.DisplayId, selected.Name)
 		fmt.Println(selected.Url)
+
+		// Ask to save problem to file
+		var getCmd *cobra.Command
+		for _, c := range cmd.Commands() {
+			if c.Name() == "get" {
+				getCmd = c
+				break
+			}
+		}
+
+		fmt.Println("\nSave problem to file? (y/n)")
+
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		input := scanner.Bytes()
+
+		if len(input) == 0 || input[0] == ' ' || input[0] == 'y' || input[0] == 'Y' {
+			getCmd.Run(getCmd, []string{strconv.Itoa(selected.DisplayId)})
+		}
 	},
 }
 
