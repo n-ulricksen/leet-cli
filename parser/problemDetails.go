@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/ulricksennick/lcfetch/urls"
+	"github.com/ulricksennick/lcfetch/util"
 )
 
 const (
@@ -102,19 +105,19 @@ func buildProblemDetailsRequest(titleSlug string) *http.Request {
 	var buf bytes.Buffer
 	buf.Write(requestPayload)
 
-	req, err := http.NewRequest("POST", problemDetailsUrl, &buf)
+	req, err := http.NewRequest("POST", urls.ProblemDetailsUrl, &buf)
 	must(err)
 
 	// Generate a CSRF token by sending a request to Leetcode
-	csrfToken := getCSRFToken()
+	csrfToken := util.GetCSRFToken()
 	if len(csrfToken) == 0 {
 		panic("Unable to generate CSRF token from Leetcode...")
 	}
 	req.AddCookie(&http.Cookie{Name: "csrftoken", Value: csrfToken})
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Origin", leetcodeBaseUrl)
-	req.Header.Set("Referer", leetcodeProblemUrl+titleSlug)
+	req.Header.Set("Origin", urls.LeetcodeBaseUrl)
+	req.Header.Set("Referer", urls.LeetcodeProblemUrl+titleSlug)
 
 	return req
 }
@@ -130,19 +133,4 @@ func createRequestPayload(titleSlug string) []byte {
 	}
 
 	return jsn
-}
-
-func getCSRFToken() string {
-	resp, err := http.Get(leetcodeBaseUrl)
-	must(err)
-	defer resp.Body.Close()
-
-	var csrfToken string
-	for _, cookie := range resp.Cookies() {
-		if cookie.Name == "csrftoken" {
-			csrfToken = cookie.Value
-			break
-		}
-	}
-	return csrfToken
 }

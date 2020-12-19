@@ -7,14 +7,7 @@ import (
 
 	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/problem"
-)
-
-const (
-	leetcodeBaseUrl    string = "https://leetcode.com/"
-	leetcodeProblemUrl        = "https://leetcode.com/problems/"
-	problemTopicUrl           = "https://leetcode.com/problems/api/tags/"
-	problemDetailsUrl         = "https://leetcode.com/graphql"
-	leetcodeApiUrl            = "https://leetcode.com/api/problems/all/"
+	"github.com/ulricksennick/lcfetch/urls"
 )
 
 type tmpProblems struct {
@@ -38,7 +31,7 @@ type tmpTopics struct {
 }
 
 func FetchAndStoreProblems() {
-	htmlReader := getHttpBody(leetcodeApiUrl)
+	htmlReader := getHttpBody(urls.LeetcodeApiUrl)
 	defer htmlReader.Close()
 
 	problems, err := parseProblems(htmlReader)
@@ -76,7 +69,7 @@ func parseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 			Id:         q.Stat.Id,
 			DisplayId:  q.Stat.DisplayId,
 			Slug:       q.Stat.Slug,
-			Url:        leetcodeProblemUrl + q.Stat.Slug,
+			Url:        urls.LeetcodeProblemUrl + q.Stat.Slug,
 			Difficulty: q.Difficulty["level"],
 			Paid:       q.Paid,
 		}
@@ -88,7 +81,7 @@ func parseProblems(r io.Reader) (map[int]*problem.Problem, error) {
 }
 
 func fetchTopics() []*problem.Topic {
-	httpBody := getHttpBody(problemTopicUrl)
+	httpBody := getHttpBody(urls.ProblemTopicUrl)
 	defer httpBody.Close()
 
 	slugsTmp := new(tmpTopics)
