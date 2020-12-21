@@ -27,8 +27,10 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/ulricksennick/lcfetch/problem"
+	"github.com/ulricksennick/lcfetch/util"
 )
 
+// Command line flags
 var listTopics []string
 var listDifficulty string
 var listIncludePaid bool
@@ -67,15 +69,29 @@ Examples:
 
 		var listBuf bytes.Buffer
 		listBuf.WriteString("-----------------------------------------\n")
-		listBuf.WriteString("ID\tComplete?\tName\t\t|\n")
+		listBuf.WriteString("ID\tDone?\tDifficulty\tName\t\t|\n")
 		listBuf.WriteString("-----------------------------------------\n")
 		for _, problem := range problemSet {
 			completedCh := ' '
 			if problem.Completed {
+				// TODO: change this 'x' to a checkmark emoji
 				completedCh = 'x'
 			}
-			listBuf.WriteString(fmt.Sprintf("%d\t%c\t%s\n",
-				problem.DisplayId, completedCh, problem.Name))
+
+			var difficulty string
+			switch problem.Difficulty {
+			case 1:
+				difficulty = "Easy"
+			case 2:
+				difficulty = "Medium"
+			case 3:
+				difficulty = "Hard"
+			}
+			difficulty = fmt.Sprintf("\033[38;5;%dm%s\033[m",
+				util.Colors[problem.Difficulty], difficulty)
+
+			listBuf.WriteString(fmt.Sprintf("%d\t%c\t%s\t%s\n",
+				problem.DisplayId, completedCh, difficulty, problem.Name))
 		}
 		fmt.Print(listBuf.String())
 	},
