@@ -105,7 +105,7 @@ func (db *DB) GetAllTopics() ([]*problem.Topic, error) {
 		return true
 	})
 
-	return ret, nil
+	return ret, err
 }
 
 func GetSortedTopicStrings() ([]string, error) {
