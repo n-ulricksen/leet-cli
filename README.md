@@ -2,6 +2,10 @@
 
 Program used to retrieve Leetcode problem URLs.
 
+### Check it out
+
+![demo](media/lcfetch.gif)
+
 ### Synopsis
 
 Get a random problem from Leetcode based on difficulty and/or topic.
@@ -11,6 +15,7 @@ lcfetch [flags]
 ```
 
 Examples:
+
 ```
 lcfetch -d hard -t dynamic-programming
 lcfetch -d medium -t array,two-pointers
@@ -26,7 +31,6 @@ lcfetch -d medium -t array,two-pointers
   -t, --topics strings      topic(s) to select problem from (comma-separated, no spaces)
 ```
 
-
 ## Commands
 
 ### lcfetch complete
@@ -39,6 +43,7 @@ lcfetch complete [flags]
 ```
 
 Examples:
+
 ```
 lcfetch complete 1337
 lcfetch complete 52 12 628
@@ -61,6 +66,7 @@ lcfetch incomplete [flags]
 ```
 
 Examples:
+
 ```
 lcfetch incomplete 1337
 lcfetch incomplete 628 12 52
@@ -102,6 +108,7 @@ lcfetch list [flags]
 ```
 
 Examples:
+
 ```
 lcfetch list
 lcfetch list -d easy -t array,string
@@ -129,6 +136,7 @@ lcfetch get [flags]
 ```
 
 Examples:
+
 ```
 lcfetch get 521
 lcfetch get 72 1262 980
