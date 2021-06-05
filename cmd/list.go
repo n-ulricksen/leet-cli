@@ -78,17 +78,7 @@ Examples:
 				completedCh = 'x'
 			}
 
-			var difficulty string
-			switch problem.Difficulty {
-			case 1:
-				difficulty = "Easy"
-			case 2:
-				difficulty = "Medium"
-			case 3:
-				difficulty = "Hard"
-			}
-			difficulty = fmt.Sprintf("\033[38;5;%dm%s\033[m",
-				util.Colors[problem.Difficulty], difficulty)
+			difficulty := util.GetColoredDifficultyText(problem.Difficulty)
 
 			listBuf.WriteString(fmt.Sprintf("%d\t%c\t%s\t%s\n",
 				problem.DisplayId, completedCh, difficulty, problem.Name))

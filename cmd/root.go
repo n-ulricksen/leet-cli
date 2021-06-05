@@ -34,6 +34,7 @@ import (
 	"github.com/ulricksennick/lcfetch/db"
 	"github.com/ulricksennick/lcfetch/parser"
 	"github.com/ulricksennick/lcfetch/problem"
+	"github.com/ulricksennick/lcfetch/util"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -85,7 +86,8 @@ Examples:
 		// Pick and print a random problem to the screen
 		rand.Seed(time.Now().UnixNano())
 		selected := problemSet[rand.Intn(len(problemSet))]
-		fmt.Printf("#%d - %s\n", selected.DisplayId, selected.Name)
+		difficulty := util.GetColoredDifficultyText(selected.Difficulty)
+		fmt.Printf("#%d - %s - %s\n", selected.DisplayId, selected.Name, difficulty)
 		fmt.Println(selected.Url)
 
 		// Ask to save problem to file
