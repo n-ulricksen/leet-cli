@@ -1,6 +1,6 @@
 # lcfetch
 
-Program used to retrieve Leetcode problem URLs.
+Program used to retrieve Leetcode problems in the terminal.
 
 ### Check it out
 
