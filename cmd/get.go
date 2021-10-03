@@ -121,7 +121,7 @@ Examples:
 				[]byte{'\n', '\n'})
 
 			ioutil.WriteFile(filename, fileContent, 0664)
-			outBuf.WriteString(fmt.Sprintln("Problem code defintion stored at: " +
+			outBuf.WriteString(fmt.Sprintln("Problem stored at: " +
 				filename))
 			for i := 0; i < outputLineLength; i++ {
 				outBuf.WriteByte('~')
