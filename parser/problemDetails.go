@@ -32,7 +32,8 @@ type ProblemDetails struct {
 	Likes           int
 	Dislikes        int
 	Content         string // TODO: figure out structure and missing data
-	Stats           string // TODO: figure this out too..
+	Accepted        int
+	Submitted       int
 	SampleTestCase  string // TODO: find other test cases, setup tests
 }
 
@@ -55,6 +56,11 @@ type CodeDefinitionList []struct {
 	Value       string `json:"value"`
 	Test        string `json:"test"`
 	DefaultCode string `json:"defaultCode"`
+}
+
+type ProblemDetailsStats struct {
+	Accepted  int `json:"totalAcceptedRaw"`
+	Submitted int `json:"totalSubmissionRaw"`
 }
 
 type RequestPayload struct {
@@ -89,12 +95,17 @@ func GetProblemDetails(titleSlug string) *ProblemDetails {
 		codeDefinitions[lang.Value] = lang.DefaultCode
 	}
 
+	stats := new(ProblemDetailsStats)
+	json.Unmarshal([]byte(problemDetailsResponse.Data.Question.Stats),
+		stats)
+
 	return &ProblemDetails{
 		CodeDefinitions: codeDefinitions,
 		Likes:           problemDetailsResponse.Data.Question.Likes,
 		Dislikes:        problemDetailsResponse.Data.Question.Dislikes,
 		Content:         problemDetailsResponse.Data.Question.Content,
-		Stats:           problemDetailsResponse.Data.Question.Stats,
+		Accepted:        stats.Accepted,
+		Submitted:       stats.Submitted,
 		SampleTestCase:  problemDetailsResponse.Data.Question.SampleTestCase,
 	}
 }
