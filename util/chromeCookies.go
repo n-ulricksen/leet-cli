@@ -5,31 +5,53 @@ import (
 	"crypto/cipher"
 	"crypto/sha1"
 	"database/sql"
+	"errors"
 	"log"
+	"os"
+	"runtime"
 
 	"golang.org/x/crypto/pbkdf2"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Cookie filepaths
 var (
-	win64ChromeCookiePath string = "%HOMEDRIVE%%HOMEPATH%\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cookies"
-	macosChromeCookiePath string = "Library/Application Support/Google/Chrome/Default/Cookies"
-	linuxChromeCookiePath string = ".config/google-chrome/Default/Cookies"
-
-	// TODO: determine user home dir
-	linuxChromiumCookiePath string = "/home/nick/snap/chromium/common/chromium/Default/Cookies"
+	// Cookie filepaths
+	win64ChromeCookiePath   string = "%HOMEDRIVE%%HOMEPATH%\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cookies"
+	macosChromeCookiePath   string = "Library/Application Support/Google/Chrome/Default/Cookies"
+	linuxChromeCookiePath   string = ".config/google-chrome/Default/Cookies"
+	linuxChromiumCookiePath string = "/snap/chromium/common/chromium/Default/Cookies"
 
 	linuxDecryptPass []byte = []byte("peanuts")
 	linuxDecryptSalt []byte = []byte("saltysalt")
 )
 
-func GetChromeCookies() map[string]string {
-	// TODO: determine OS/cookie file path
+func GetCredentialCookies(browser string) (map[string]string, error) {
+	var cookies map[string]string
+
+	switch browser {
+	case "chromium":
+		if runtime.GOOS == "linux" {
+			homedir, err := os.UserHomeDir()
+			if err != nil {
+				return nil, err
+			}
+			path := homedir + linuxChromiumCookiePath
+			cookies = GetChromeCookies(path)
+		} else {
+			return nil, errors.New("Supported operating systems: linux")
+		}
+	default:
+		return nil, errors.New("Supported browsers: chromium")
+	}
+
+	return cookies, nil
+}
+
+func GetChromeCookies(cookiesFilepath string) map[string]string {
 	cookies := make(map[string]string)
 
-	db, err := sql.Open("sqlite3", linuxChromiumCookiePath)
+	db, err := sql.Open("sqlite3", cookiesFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,7 +83,12 @@ func GetChromeCookies() map[string]string {
 
 // TODO: accept other OS (currently: linux)
 func decryptCookieValue(encrypted []byte) []byte {
-	key := pbkdf2.Key(linuxDecryptPass, linuxDecryptSalt, 1, 16, sha1.New)
+	var key []byte
+	if runtime.GOOS == "linux" {
+		key = pbkdf2.Key(linuxDecryptPass, linuxDecryptSalt, 1, 16, sha1.New)
+	} else {
+		log.Fatal("Supported operating systems: linux")
+	}
 
 	decrypted := chromiumDecrypt(encrypted, key)
 
