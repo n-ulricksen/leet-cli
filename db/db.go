@@ -13,6 +13,7 @@ const (
 	defaultDbFilePath  = "/tmp/leetcode"
 	problemsCollection = "problems"
 	topicsCollection   = "topics"
+	cookiesCollection  = "cookies"
 )
 
 type DB struct {
@@ -30,6 +31,7 @@ func CreateDB() (*DB, error) {
 	// Create collection of problems
 	conn.Create(problemsCollection)
 	conn.Create(topicsCollection)
+	conn.Create(cookiesCollection)
 	return &DB{conn}, nil
 }
 
@@ -253,6 +255,40 @@ func (db *DB) SetProblemBad(displayId int) error {
 	return nil
 }
 
+// Insert items into cookies table as a single document
+func (db *DB) InsertCookies(cookies map[string]string) error {
+	db.DropAllCookies()
+
+	var err error
+	var doc map[string]interface{}
+
+	jsn, err := json.Marshal(cookies)
+	if err != nil {
+		return err
+	}
+	json.Unmarshal(jsn, &doc)
+
+	coll := db.conn.Use(cookiesCollection)
+	_, err = coll.Insert(doc)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *DB) GetAllCookies() map[string]string {
+	cookies := make(map[string]string)
+
+	coll := db.conn.Use(cookiesCollection)
+	coll.ForEachDoc(func(id int, doc []byte) bool {
+		json.Unmarshal(doc, &cookies)
+		return true
+	})
+
+	return cookies
+}
+
 // Drop the "problems" collection, create a new empty one
 func (db *DB) DropAllProblems() {
 	db.conn.Drop(problemsCollection)
@@ -263,6 +299,12 @@ func (db *DB) DropAllProblems() {
 func (db *DB) DropAllTopics() {
 	db.conn.Drop(topicsCollection)
 	db.conn.Create(topicsCollection)
+}
+
+// Drop the "cookies" collection, create a new empty one
+func (db *DB) DropAllCookies() {
+	db.conn.Drop(cookiesCollection)
+	db.conn.Create(cookiesCollection)
 }
 
 // Lookup a problem ID in the database by its leetcode displayId
