@@ -13,7 +13,24 @@ var FileExt = map[string]string{
 	"scala":      "scala",
 	"rust":       "rs",
 	"typescript": "ts",
-	"kotlin":     "kotlin",
+	"kotlin":     "kt",
 	"cpp":        "cpp",
 	"php":        "php",
+}
+
+var FileType = map[string]string{
+	"swift": "swift",
+	"go":    "golang",
+	"py":    "python3",
+	"c":     "c",
+	"cs":    "csharp",
+	"js":    "javascript",
+	"java":  "java",
+	"rb":    "ruby",
+	"scala": "scala",
+	"rs":    "rust",
+	"ts":    "typescript",
+	"kt":    "kotlin",
+	"cpp":   "cpp",
+	"php":   "php",
 }
