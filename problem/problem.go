@@ -9,16 +9,17 @@ const (
 var DIFFICULTY_STRINGS = []string{"easy", "medium", "hard"}
 
 type Problem struct {
-	Name       string   `json:"name"`
-	Id         int      `json:"id"`
-	DisplayId  int      `json:"displayId"` // identify a problem on Leetcode website
-	Url        string   `json:"url"`
-	Slug       string   `json:"titleSlug"`
-	Difficulty int      `json:"difficulty"`
-	Topics     []string `json:"topics"`
-	Paid       bool     `json:"paid"`
-	Completed  bool     `json:"completed"`
-	IsBad      bool     `json:"isBad"`
+	Name           string   `json:"name"`
+	Id             int      `json:"id"`
+	DisplayId      int      `json:"displayId"` // identify a problem on Leetcode website
+	Url            string   `json:"url"`
+	Slug           string   `json:"titleSlug"`
+	Difficulty     int      `json:"difficulty"`
+	Topics         []string `json:"topics"`
+	Paid           bool     `json:"paid"`
+	Completed      bool     `json:"completed"`
+	IsBad          bool     `json:"isBad"`
+	SampleTestCase string   `json:"sampleTestCase"`
 }
 
 func FilterByDifficulty(problems []*Problem, difficulty int) []*Problem {

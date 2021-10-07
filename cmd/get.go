@@ -95,6 +95,8 @@ Examples:
 
 			problemDetails := parser.GetProblemDetails(prob.Slug)
 
+			database.SetProblemTestCase(prob.Id, problemDetails.SampleTestCase)
+
 			sourceCode := []byte(problemDetails.CodeDefinitions[codeLanguage])
 			if len(sourceCode) == 0 {
 				var buf bytes.Buffer
@@ -116,7 +118,7 @@ Examples:
 			}
 			problemDescription := util.Commentify(problemContent, codeLanguage)
 
-			filename := fmt.Sprintf("%s.%s", prob.Slug, util.FileExt[codeLanguage])
+			filename := fmt.Sprintf("%d-%s.%s", prob.DisplayId, prob.Slug, util.FileExt[codeLanguage])
 			fileContent := bytes.Join([][]byte{problemDescription, sourceCode},
 				[]byte{'\n', '\n'})
 

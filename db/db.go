@@ -154,6 +154,40 @@ func (db *DB) GetAllProblems() ([]*problem.Problem, error) {
 	return ret, nil
 }
 
+// Return a single problem, looked up by leetcode displayId
+func (db *DB) GetProblemByDisplayId(id int) (*problem.Problem, error) {
+	var ret *problem.Problem
+	var err error
+
+	docId, err := db.getProblemId(id)
+	if err != nil {
+		return nil, err
+	}
+
+	coll := db.conn.Use(problemsCollection)
+
+	// Iterate over all problems checking displayId
+	coll.ForEachDoc(func(id int, doc []byte) bool {
+		if id == docId {
+			print("found doc")
+			prob, e := documentToProblem(doc)
+			if e != nil {
+				err = e
+				return false
+			}
+			ret = prob
+			return false
+		}
+		return true
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 // Return a slice of pointers to one or more problems found by displayId
 func (db *DB) GetProblemsByDisplayId(ids []int) ([]*problem.Problem, error) {
 	var ret []*problem.Problem
@@ -246,6 +280,27 @@ func (db *DB) SetProblemBad(displayId int) error {
 		return err
 	}
 	doc["isBad"] = true
+
+	err = coll.Update(updateId, doc)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *DB) SetProblemTestCase(displayId int, testcase string) error {
+	updateId, err := db.getProblemId(displayId)
+	if err != nil {
+		return err
+	}
+
+	coll := db.conn.Use(problemsCollection)
+	doc, err := coll.Read(updateId)
+	if err != nil {
+		return err
+	}
+	doc["sampleTestCase"] = testcase
 
 	err = coll.Update(updateId, doc)
 	if err != nil {

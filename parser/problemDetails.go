@@ -34,7 +34,7 @@ type ProblemDetails struct {
 	Content         string // TODO: figure out structure and missing data
 	Accepted        int
 	Submitted       int
-	SampleTestCase  string // TODO: find other test cases, setup tests
+	SampleTestCase  string
 }
 
 type ProblemDetailsResponse struct {
