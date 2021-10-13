@@ -169,7 +169,6 @@ func (db *DB) GetProblemByDisplayId(id int) (*problem.Problem, error) {
 	// Iterate over all problems checking displayId
 	coll.ForEachDoc(func(id int, doc []byte) bool {
 		if id == docId {
-			print("found doc")
 			prob, e := documentToProblem(doc)
 			if e != nil {
 				err = e

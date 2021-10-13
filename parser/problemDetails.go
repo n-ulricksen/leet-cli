@@ -31,7 +31,7 @@ type ProblemDetails struct {
 	CodeDefinitions map[string]string
 	Likes           int
 	Dislikes        int
-	Content         string // TODO: figure out structure and missing data
+	Content         string
 	Accepted        int
 	Submitted       int
 	SampleTestCase  string
