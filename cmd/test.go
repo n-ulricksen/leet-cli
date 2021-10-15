@@ -64,7 +64,7 @@ var testCmd = &cobra.Command{
 		resp, err := client.Do(httpRequest)
 		must(err)
 		if resp.StatusCode != http.StatusOK {
-			fmt.Printf("Invalid leetcode credentials. Please login using the `lcfetch login` command.\n")
+			fmt.Printf("Invalid leetcode credentials. Please login using the `leet login` command.\n")
 			os.Exit(1)
 		}
 		defer resp.Body.Close()

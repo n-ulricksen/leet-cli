@@ -37,8 +37,8 @@ var completeCmd = &cobra.Command{
 a random problem.
 
 Examples:
-  'lcfetch complete 1337'
-  'lcfetch complete 52 12 628'`,
+  'leet complete 1337'
+  'leet complete 52 12 628'`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		database, err := db.CreateDB()

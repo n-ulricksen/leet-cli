@@ -48,8 +48,8 @@ var getCmd = &cobra.Command{
 	Long: `Lookup one or more problems by Leetcode ID.
 
 Examples:
-  'lcfetch get 521'
-  'lcfetch get 72 1262 980'`,
+  'leet get 521'
+  'leet get 72 1262 980'`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		database, err := db.CreateDB()

@@ -36,8 +36,8 @@ var incompleteCmd = &cobra.Command{
 	Long: `Mark more ore more problems, allowing them to show up when requesting a random problem.
 
 Example:
-  'lcfetch incomplete 1337'
-  'lcfetch incomplete 628 12 52'`,
+  'leet incomplete 1337'
+  'leet incomplete 628 12 52'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		database, err := db.CreateDB()
 		must(err)

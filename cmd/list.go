@@ -44,8 +44,8 @@ var listCmd = &cobra.Command{
 	Long: `Print a list of the Leetcode problems, filtered by difficulty and/or topic.
 
 Examples:
-  'lcfetch list'
-  'lcfetch list -d easy -t array,string'`,
+  'leet list'
+  'leet list -d easy -t array,string'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		problemSet := getFilteredProblemSet(listDifficulty, listTopics, listIncludePaid)
 

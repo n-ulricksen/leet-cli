@@ -38,7 +38,7 @@ var requiredLoginCookies = []string{"csrftoken", "LEETCODE_SESSION"}
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Login to Leetcode",
-	Long:  "Login to Leetcode using your browser's cookies.\nFirst, login to leetcode.com using your web browser, then close the web browser, and run `lcfetch login <browser>` again.",
+	Long:  "Login to Leetcode using your browser's cookies.\nFirst, login to leetcode.com using your web browser, then close the web browser, and run `leet login <browser>` again.",
 	Args:  validateLoginArgs, // Web browser
 	Run: func(cmd *cobra.Command, args []string) {
 		browser := args[0]
@@ -48,7 +48,7 @@ var loginCmd = &cobra.Command{
 		// verify csrf and session cookies are present
 		for _, cookie := range requiredLoginCookies {
 			if _, ok := cookies[cookie]; !ok {
-				log.Fatalf("Could not retrieve `%s` from %s cookies.\nPlease login to leetcode.com using your web browser, close the web browser, and run `lcfetch login <browser>` again.", cookie, browser)
+				log.Fatalf("Could not retrieve `%s` from %s cookies.\nPlease login to leetcode.com using your web browser, close the web browser, and run `leet login <browser>` again.", cookie, browser)
 			}
 		}
 

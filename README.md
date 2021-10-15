@@ -1,52 +1,52 @@
-# lcfetch
+# leet-cli
 
 Program used to retrieve Leetcode problems in the terminal.
 
 ### Check it out
 
-![demo](media/lcfetch.gif)
+![demo](media/leet.gif)
 
 ### Synopsis
 
 Get a random problem from Leetcode based on difficulty and/or topic.
 
 ```
-lcfetch [flags]
+leet [flags]
 ```
 
 Examples:
 
 ```
-lcfetch -d hard -t dynamic-programming
-lcfetch -d medium -t array,two-pointers
+leet -d hard -t dynamic-programming
+leet -d medium -t array,two-pointers
 ```
 
 ### Options
 
 ```
-      --config string       config file (default is $HOME/.lcfetch.yaml)
+      --config string       config file (default is $HOME/.leet.yaml)
   -d, --difficulty string   difficulty of problem to select (default "all")
-  -h, --help                help for lcfetch
+  -h, --help                help for leet
   -p, --paid                include paid/premium problems
   -t, --topics strings      topic(s) to select problem from (comma-separated, no spaces)
 ```
 
 ## Commands
 
-### lcfetch complete
+### leet complete
 
 Mark one or more problems complete, prevening them from showing up when requesting
 a random problem.
 
 ```
-lcfetch complete [flags]
+leet complete [flags]
 ```
 
 Examples:
 
 ```
-lcfetch complete 1337
-lcfetch complete 52 12 628
+leet complete 1337
+leet complete 52 12 628
 ```
 
 #### Options
@@ -57,19 +57,19 @@ lcfetch complete 52 12 628
 
 ---
 
-### lcfetch incomplete
+### leet incomplete
 
 Mark more ore more problems, allowing them to show up when requesting a random problem.
 
 ```
-lcfetch incomplete [flags]
+leet incomplete [flags]
 ```
 
 Examples:
 
 ```
-lcfetch incomplete 1337
-lcfetch incomplete 628 12 52
+leet incomplete 1337
+leet incomplete 628 12 52
 ```
 
 #### Options
@@ -80,12 +80,12 @@ lcfetch incomplete 628 12 52
 
 ---
 
-### lcfetch stats
+### leet stats
 
 Print details about completed questions per category and difficulty.
 
 ```
-lcfetch stats [flags]
+leet stats [flags]
 ```
 
 #### Options
@@ -99,19 +99,19 @@ lcfetch stats [flags]
 
 ---
 
-### lcfetch list
+### leet list
 
 Print a list of the Leetcode problems, filtered by difficulty and/or topic.
 
 ```
-lcfetch list [flags]
+leet list [flags]
 ```
 
 Examples:
 
 ```
-lcfetch list
-lcfetch list -d easy -t array,string
+leet list
+leet list -d easy -t array,string
 ```
 
 #### Options
@@ -127,19 +127,19 @@ lcfetch list -d easy -t array,string
 
 ---
 
-### lcfetch get
+### leet get
 
 Lookup one or more problems by Leetcode ID.
 
 ```
-lcfetch get [flags]
+leet get [flags]
 ```
 
 Examples:
 
 ```
-lcfetch get 521
-lcfetch get 72 1262 980
+leet get 521
+leet get 72 1262 980
 ```
 
 #### Options
@@ -150,12 +150,12 @@ lcfetch get 72 1262 980
 
 ---
 
-### lcfetch topics
+### leet topics
 
 List all problem topics on Leetcode.
 
 ```
-lcfetch topics [flags]
+leet topics [flags]
 ```
 
 #### Options

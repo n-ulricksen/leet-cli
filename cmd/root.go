@@ -48,13 +48,13 @@ var rootIncludePaid bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "lcfetch",
+	Use:   "leet",
 	Short: "Program used to retrieve Leetcode problem URLs.",
 	Long: `Get a random problem from Leetcode based on difficulty and/or topic.
 
 Examples:
-  'lcfetch -d hard -t dynamic-programming'
-  'lcfetch -d medium -t array,two-pointers'`,
+  'leet -d hard -t dynamic-programming'
+  'leet -d medium -t array,two-pointers'`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		database, err := db.CreateDB()
 		must(err)
@@ -134,7 +134,7 @@ func getFilteredProblemSet(difficulty string, topics []string, includePaid bool)
 	}
 	if len(problemSet) == 0 {
 		fmt.Println("No problems found with the provided topic...")
-		fmt.Println("Run 'lcfetch topics' to list all topics.")
+		fmt.Println("Run 'leet topics' to list all topics.")
 		return []*problem.Problem{}
 	}
 
@@ -178,7 +178,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	// Persistent flags
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.lcfetch.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.leet.yaml)")
 
 	// Local command flags
 	rootCmd.Flags().StringVarP(&rootDifficulty, "difficulty", "d", "all",
@@ -203,9 +203,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".lcfetch" (without extension).
+		// Search config in home directory with name ".leet" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".lcfetch")
+		viper.SetConfigName(".leet")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
