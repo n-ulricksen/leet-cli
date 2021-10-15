@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ulricksennick/lcfetch/urls"
-	"github.com/ulricksennick/lcfetch/util"
+	"github.com/ulricksennick/leet-cli/urls"
+	"github.com/ulricksennick/leet-cli/util"
 )
 
 const (

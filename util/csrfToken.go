@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ulricksennick/lcfetch/urls"
+	"github.com/ulricksennick/leet-cli/urls"
 )
 
 func GetCSRFToken() string {

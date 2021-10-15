@@ -26,10 +26,10 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/ulricksennick/lcfetch/db"
-	"github.com/ulricksennick/lcfetch/parser"
-	"github.com/ulricksennick/lcfetch/problem"
-	"github.com/ulricksennick/lcfetch/util"
+	"github.com/ulricksennick/leet-cli/db"
+	"github.com/ulricksennick/leet-cli/parser"
+	"github.com/ulricksennick/leet-cli/problem"
+	"github.com/ulricksennick/leet-cli/util"
 )
 
 var statsIncludePaid bool

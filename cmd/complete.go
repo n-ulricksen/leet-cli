@@ -26,7 +26,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"github.com/ulricksennick/lcfetch/db"
+	"github.com/ulricksennick/leet-cli/db"
 )
 
 // completeCmd represents the complete command

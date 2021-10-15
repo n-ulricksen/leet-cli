@@ -5,9 +5,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/ulricksennick/lcfetch/db"
-	"github.com/ulricksennick/lcfetch/problem"
-	"github.com/ulricksennick/lcfetch/urls"
+	"github.com/ulricksennick/leet-cli/db"
+	"github.com/ulricksennick/leet-cli/problem"
+	"github.com/ulricksennick/leet-cli/urls"
 )
 
 type tmpProblems struct {

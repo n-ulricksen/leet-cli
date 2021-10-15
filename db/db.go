@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	tiedot "github.com/HouzuoGuo/tiedot/db"
-	"github.com/ulricksennick/lcfetch/problem"
+	"github.com/ulricksennick/leet-cli/problem"
 )
 
 const (

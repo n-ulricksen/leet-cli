@@ -1,4 +1,4 @@
-module github.com/ulricksennick/lcfetch
+module github.com/ulricksennick/leet-cli
 
 go 1.14
 

@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/ulricksennick/lcfetch/cmd"
+import "github.com/ulricksennick/leet-cli/cmd"
 
 func main() {
 	cmd.Execute()
