@@ -19,7 +19,7 @@ var (
 	// Cookie filepaths
 	win64ChromeCookiePath   string = "%HOMEDRIVE%%HOMEPATH%\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cookies"
 	macosChromeCookiePath   string = "Library/Application Support/Google/Chrome/Default/Cookies"
-	linuxChromeCookiePath   string = ".config/google-chrome/Default/Cookies"
+	linuxChromeCookiePath   string = "~/.config/google-chrome/Default/Cookies"
 	linuxChromiumCookiePath string = "/snap/chromium/common/chromium/Default/Cookies"
 
 	linuxDecryptPass []byte = []byte("peanuts")
