@@ -17,10 +17,15 @@ import (
 
 var (
 	// Cookie filepaths
-	win64ChromeCookiePath   string = "%HOMEDRIVE%%HOMEPATH%\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cookies"
-	macosChromeCookiePath   string = "Library/Application Support/Google/Chrome/Default/Cookies"
-	linuxChromeCookiePath   string = "~/.config/google-chrome/Default/Cookies"
-	linuxChromiumCookiePath string = "/snap/chromium/common/chromium/Default/Cookies"
+	win64ChromeCookiePath string = "%HOMEDRIVE%%HOMEPATH%\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Cookies"
+	macosChromeCookiePath string = "Library/Application Support/Google/Chrome/Default/Cookies"
+	linuxChromeCookiePath string = "~/.config/google-chrome/Default/Cookies"
+
+	// These will be prepended with the user's home directory
+	linuxChromiumCookiePaths = []string{
+		"/snap/chromium/common/chromium/Default/Cookies",
+		"/.config/chromium/Default/Cookies",
+	}
 
 	linuxDecryptPass []byte = []byte("peanuts")
 	linuxDecryptSalt []byte = []byte("saltysalt")
@@ -36,8 +41,19 @@ func GetCredentialCookies(browser string) (map[string]string, error) {
 			if err != nil {
 				return nil, err
 			}
-			path := homedir + linuxChromiumCookiePath
-			cookies = GetChromeCookies(path)
+
+			cookiesFound := false
+			for _, cookiePath := range linuxChromiumCookiePaths {
+				path := homedir + cookiePath
+				cookies, err = GetChromeCookies(path)
+				if err == nil {
+					cookiesFound = true
+					break
+				}
+			}
+			if !cookiesFound {
+				return nil, errors.New("Could not access browser cookies")
+			}
 		} else {
 			return nil, errors.New("Supported operating systems: linux")
 		}
@@ -48,18 +64,18 @@ func GetCredentialCookies(browser string) (map[string]string, error) {
 	return cookies, nil
 }
 
-func GetChromeCookies(cookiesFilepath string) map[string]string {
+func GetChromeCookies(cookiesFilepath string) (map[string]string, error) {
 	cookies := make(map[string]string)
 
 	db, err := sql.Open("sqlite3", cookiesFilepath)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer db.Close()
 
 	rows, err := db.Query("select name, encrypted_value from cookies")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -68,7 +84,7 @@ func GetChromeCookies(cookiesFilepath string) map[string]string {
 		var encryptedValue []byte
 		err = rows.Scan(&name, &encryptedValue)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		// decrypt value
@@ -78,7 +94,7 @@ func GetChromeCookies(cookiesFilepath string) map[string]string {
 		}
 	}
 
-	return cookies
+	return cookies, nil
 }
 
 // TODO: accept other OS (currently: linux)
